@@ -5,49 +5,40 @@
 */
 
 #include <SPI.h>
-#include <RF24_config.h>
-#include <printf.h>
 #include <RF24.h>
 #include <nRF24L01.h>
 
-boolean masikgomb = 0;					// meg van-e nyomva a távirányitó gombja
-int utasitas = 0;					// a soros portról érkezõ utasítás
-const byte led = 2;
-
 RF24 radio(7, 8);
-const byte adas = 2;					// cím adáshoz
-const byte vetel = 1;					// cím vételhez
+const byte cim = 00001;
+boolean gomb = 0;
 
 void setup() {
 	pinMode(LED_BUILTIN, OUTPUT);
 	Serial.begin(9600);
-	radio.begin();						// adó indítása
-	radio.openWritingPipe(adas);		// csatorna beállítása küldéshez
-	radio.openReadingPipe(1, vetel);	// csatorna beállítása vételhez
-	radio.setPALevel(RF24_PA_MIN);		// adó térereje
-
+	radio.begin();
+	radio.openReadingPipe(0, cim);
+	radio.setPALevel(RF24_PA_MIN);
+	radio.startListening();
 }
 
 void loop() {
-	radio.startListening();							// vevõ módba kapcsolja az adót
-	if (radio.available()) {						// ha jött üzenet...
-		radio.read(&masikgomb, sizeof(masikgomb));	// ..olvasd ki
-		if (masikgomb)
+	if (radio.available()) {
+		char uzenet[32] = "";
+		radio.read(&uzenet, sizeof(uzenet));
+		radio.read(&gomb, sizeof(gomb));
+		if (gomb == HIGH)
 		{
-			digitalWrite(led, HIGH);
+			digitalWrite(LED_BUILTIN, HIGH);
+			Serial.println(uzenet);
 		}
 		else
 		{
-			digitalWrite(led, LOW);
+			digitalWrite(LED_BUILTIN, LOW);
+			Serial.println(uzenet);
 		}
 	}
-	delay(5);
 
-	radio.stopListening();							// adó módba kapcsolja az adót
-	utasitas = Serial.read();						// kiolvassa az utasítást soros portról
-	if (utasitas == 1)
-	{
-		radio.write(&utasitas, sizeof(utasitas));	// elküldi az utasítást
-	}
 	delay(5);
 }
+
+
