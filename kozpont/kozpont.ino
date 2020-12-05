@@ -1,19 +1,13 @@
 /*
- Name:		kicsikocsi.ino
- Created:	12/5/2020 6:14:38 PM
+ Name:		kozpont.ino
+ Created:	12/5/2020 8:17:27 PM
  Author:	qbz
 */
 
-//KICSIKOCSI TÁVIRÁNYÍTÓ
-
-
+// the setup function runs once when you press reset or power the board
 #include <SPI.h>
 #include <RF24.h>
-#include <RF24_config.h>
-#include <printf.h>
 #include <nRF24L01.h>
-#include <MPU6050.h>
-
 void setup() {
 
 }

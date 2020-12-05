@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30711.63
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kicsikocsi", "kicsikocsi\kicsikocsi.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "taviranyito", "taviranyito\taviranyito.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kozpont", "kozpont\kozpont.vcxproj", "{EB0CF97C-DFDF-493B-943A-DF1F965E8AF0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.Build.0 = Debug|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.ActiveCfg = Release|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.Build.0 = Release|Win32
+		{EB0CF97C-DFDF-493B-943A-DF1F965E8AF0}.Debug|x86.ActiveCfg = Debug|Win32
+		{EB0CF97C-DFDF-493B-943A-DF1F965E8AF0}.Debug|x86.Build.0 = Debug|Win32
+		{EB0CF97C-DFDF-493B-943A-DF1F965E8AF0}.Release|x86.ActiveCfg = Release|Win32
+		{EB0CF97C-DFDF-493B-943A-DF1F965E8AF0}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
