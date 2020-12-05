@@ -6,6 +6,14 @@
 
 //KICSIKOCSI TÁVIRÁNYÍTÓ
 
+//const byte RfMOSI = 11;
+//const byte RfMISO = 12;
+//const byte RfSCK = 13;
+//
+//const byte MINT = 2;
+//const byte MSDA = A4;
+//const byte MSCL = A5;
+
 
 #include <Wire.h>
 #include <SPI.h>
@@ -15,45 +23,48 @@
 #include <nRF24L01.h>
 #include <MPU6050.h>
 
-const byte RfCS = 7;
-const byte RfCE = 8;
-const byte RfMOSI = 11;
-const byte RfMISO = 12;
-const byte RfSCK = 13;
-
-const byte MINT = 2;
-const byte MSDA = A4;
-const byte MSCL = A5;
+const byte RfCS = 7;					// "chip select" pin
+const byte RfCE = 8;					// "chip enable" pin
 
 const byte gomb = 9;
-boolean megnyomva = 0;
-
 const byte led = 3;
 
-RF24 radio(RfCE, RfCS);
-const byte cim = 00001;
+boolean ezmegnyomva = 0;
+int fogadottutasitas = 0;
+
+RF24 radio(RfCE, RfCS);					// adó beállítása
+const byte adas = 1;					// cím adáshoz
+const byte vetel = 2;					// cím vételhez
 
 void setup() {
 	pinMode(gomb, INPUT);
-	radio.begin();
-	radio.openWritingPipe(cim);
-	radio.setPALevel(RF24_PA_MIN);
-	radio.stopListening();
+	pinMode(led, OUTPUT);
+	radio.begin();						// adó indítása
+	radio.openWritingPipe(adas);		// csatorna beállítása küldéshez
+	radio.openReadingPipe(1, vetel);	// csatorna beállítása vételhez
+	radio.setPALevel(RF24_PA_MIN);		// adó térereje
 }
 
-// the loop function runs over and over again until power down or reset
 void loop() {
-	megnyomva = digitalRead(gomb);
-	if (megnyomva)
+	radio.stopListening();										// beállítás adónak
+	ezmegnyomva = digitalRead(gomb);
+	radio.write(&ezmegnyomva, sizeof(ezmegnyomva));				// gomb állásának küldése
+	delay(5);
+
+	radio.startListening();										// beállítás vevõnek
+	while (!radio.available());									// figyeli, hogy jön-e adás
+	radio.read(&fogadottutasitas, sizeof(fogadottutasitas));	// kiolvassa az adást
+	if (fogadottutasitas == 1)
 	{
-		const char szoveg[] = "A gomb meg van nyomva";
-		radio.write(&szoveg, sizeof(szoveg));
+		digitalWrite(led, HIGH);
+//		const char szoveg[] = "BE";
+//		radio.write(&szoveg, sizeof(szoveg));
 	}
 	else
 	{
-		const char szoveg[] = "A gomb nincs megnyomva";
-		radio.write(&szoveg, sizeof(szoveg));
+		digitalWrite(led, LOW);
+//		const char szoveg[] = "KI";
+//		radio.write(&szoveg, sizeof(szoveg));
 	}
-	radio.write(&megnyomva, sizeof(megnyomva));
-	delay(1000);
+	delay(5);
 }
