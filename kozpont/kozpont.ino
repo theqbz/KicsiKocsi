@@ -10,7 +10,7 @@
 
 RF24 radio(7, 8);
 const byte cim = 00001;
-byte gomb = 3;
+byte gomb = 0;
 const byte led = 2;
 
 void setup() {
@@ -27,23 +27,20 @@ void loop() {
 	if (radio.available()) {
 		char uzenet[32] = "";
 		radio.read(&uzenet, sizeof(uzenet));
-		delay(5);
 		radio.read(&gomb, sizeof(gomb));
-		if (gomb == 1)
+		Serial.print("Gomb: ");
+		Serial.println(gomb);
+		if (gomb == HIGH)
 		{
 			digitalWrite(led, LOW);
 			Serial.print("Van uzenet: ");
 			Serial.println(uzenet);
-			Serial.print("Gomb: ");
-			Serial.println(gomb);
 		}
 		else
 		{
 			digitalWrite(led, HIGH);
 			Serial.print("Nincs uzenet: ");
 			Serial.println(uzenet);
-			Serial.print("Gomb: ");
-			Serial.println(gomb);
 		}
 	}
 
