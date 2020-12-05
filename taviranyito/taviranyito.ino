@@ -26,7 +26,7 @@ const byte MSDA = A4;
 const byte MSCL = A5;
 
 const byte gomb = 9;
-boolean megnyomva = 0;
+byte megnyomva = 0;
 
 const byte led = 3;
 
@@ -34,6 +34,7 @@ RF24 radio(RfCE, RfCS);
 const byte cim = 00001;
 
 void setup() {
+	Serial.begin(9600);
 	pinMode(gomb, INPUT);
 	radio.begin();
 	radio.openWritingPipe(cim);
@@ -44,7 +45,9 @@ void setup() {
 // the loop function runs over and over again until power down or reset
 void loop() {
 	megnyomva = digitalRead(gomb);
-	if (megnyomva)
+	Serial.print("megnyomva: ");
+	Serial.println(megnyomva);
+	if (megnyomva == 1)
 	{
 		const char szoveg[] = "A gomb meg van nyomva";
 		radio.write(&szoveg, sizeof(szoveg));
