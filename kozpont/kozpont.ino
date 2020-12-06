@@ -45,7 +45,7 @@ void loop() {
 	{
 		Serial.println("valami nem oke");
 	}
-	delay(300);
+	delay(10);
 
 		//radio.read(&gomb, sizeof(gomb));
 		//Serial.print("Gomb a Nano-n megnyomva: ");

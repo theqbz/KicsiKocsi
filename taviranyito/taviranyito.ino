@@ -59,7 +59,7 @@ void loop() {
 		radio.write(&uzenet, sizeof(uzenet));
 		Serial.println("nincs megnyomva: KI");
 	}
-	delay(200);
+	delay(5);
 
 	//Serial.print("megnyomva: ");
 	//Serial.println(megnyomva);
