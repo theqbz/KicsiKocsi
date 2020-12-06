@@ -26,7 +26,8 @@ const byte MSDA = A4;
 const byte MSCL = A5;
 
 const byte gomb = 9;
-int megnyomva = 0;
+char uzenet[] = "Egyelore semmi nem tortent";
+//int megnyomva = 0;
 //int elozo = 0;
 
 const byte led = 3;
@@ -45,13 +46,23 @@ void setup() {
 
 
 void loop() {
-	if (digitalRead(gomb) == HIGH)
+	if (digitalRead(gomb))
 	{
-		megnyomva++;
+		int uzenet = 1;
+		radio.write(&uzenet, sizeof(uzenet));
+		Serial.println("megnyomva: BE");
+		//megnyomva++;
 	}
-	Serial.print("megnyomva: ");
-	Serial.println(megnyomva);
-	radio.write(&megnyomva, sizeof(megnyomva));
+	else
+	{
+		int uzenet = 0;
+		radio.write(&uzenet, sizeof(uzenet));
+		Serial.println("nincs megnyomva: KI");
+	}
+	delay(200);
+
+	//Serial.print("megnyomva: ");
+	//Serial.println(megnyomva);
 	//if (megnyomva == HIGH)
 	//{
 	//	const char szoveg[] = "A gomb meg van nyomva";
@@ -64,5 +75,4 @@ void loop() {
 	//	radio.write(&szoveg, sizeof(szoveg));
 	//	allapot = 2;
 	//}
-	delay(10);
 }

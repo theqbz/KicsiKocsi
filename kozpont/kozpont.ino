@@ -10,8 +10,10 @@
 
 RF24 radio(7, 8);
 const byte cim = 00001;
-int gomb = 0;
 const byte led = 2;
+
+
+//long gomb = 0;
 
 void setup() {
 	pinMode(led, OUTPUT);
@@ -20,19 +22,35 @@ void setup() {
 	radio.openReadingPipe(0, cim);
 	radio.setPALevel(RF24_PA_MIN);
 	radio.startListening();
-	digitalWrite(led, HIGH);
 }
 
 void loop() {
-	if (radio.available()) {
-		//char uzenet[32] = "";
-		//radio.read(&uzenet, sizeof(uzenet));
-		radio.read(&gomb, sizeof(gomb));
-		Serial.print("Gomb a Nano-n megnyomva: ");
-		Serial.print(gomb);
-		int negyzet = gomb * gomb;
-		Serial.print(" , a negyzete: ");
-		Serial.println(negyzet);
+	if (radio.available())
+	{
+		int fogadott = 0;
+		radio.read(&fogadott, sizeof(fogadott));
+		Serial.print(fogadott);
+		if (fogadott == 1)
+		{
+			Serial.println(" bekapcs ag");
+			digitalWrite(led, HIGH);
+		}
+		else
+		{
+			Serial.println(" kikapcs ag");
+			digitalWrite(led, LOW);
+		}
+	}
+	else
+	{
+		Serial.println("valami nem oke");
+	}
+	delay(300);
+
+		//radio.read(&gomb, sizeof(gomb));
+		//Serial.print("Gomb a Nano-n megnyomva: ");
+		//Serial.print(gomb);
+		//long negyzet = gomb * gomb;
 		//if (gomb == HIGH)
 		//{
 		//	digitalWrite(led, LOW);
@@ -45,12 +63,6 @@ void loop() {
 		//	Serial.print("Nincs uzenet: ");
 		//	Serial.println(uzenet);
 		//}
-	}
-	else
-	{
-		Serial.println("valami nem oke");
-	}
-	delay(5);
 }
 
 
