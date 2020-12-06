@@ -9,7 +9,7 @@
 #include <nRF24L01.h>
 
 RF24 radio(7, 8);
-const byte cim = 00001;
+const byte cim = 9654;
 const byte led = 2;
 
 

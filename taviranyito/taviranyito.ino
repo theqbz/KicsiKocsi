@@ -33,7 +33,7 @@ char uzenet[] = "Egyelore semmi nem tortent";
 const byte led = 3;
 
 RF24 radio(RfCE, RfCS);
-const byte cim = 00001;
+const byte cim = 9654;
 
 void setup() {
 	Serial.begin(9600);
