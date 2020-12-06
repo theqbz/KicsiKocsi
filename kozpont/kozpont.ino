@@ -1,4 +1,6 @@
 /*
+KICSIKOCSI KÖPONTI EGYSÉG
+
  Name:		kozpont.ino
  Created:	12/5/2020 8:17:27 PM
  Author:	qbz
@@ -8,9 +10,14 @@
 #include <RF24.h>
 #include <nRF24L01.h>
 
-RF24 radio(7, 8);
-const byte cim = 9654;
+// Arduino UNO Wifi R2 pin-kiosztás
 const byte led = 2;
+const byte RfCS = 8;					// az nRF24L01 modul "Chip Set" lába
+const byte RfCE = 7;					// az nRF24L01 modul "Chip Enable" lába
+
+// nRF24L01 rádió állandói
+RF24 radio(RfCE, RfCS);					// Rádió létrehozása
+const byte cim = 9654;					// a Rádió csatornájának címe
 
 
 //long gomb = 0;
