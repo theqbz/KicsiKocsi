@@ -10,7 +10,7 @@
 
 RF24 radio(7, 8);
 const byte cim = 00001;
-byte gomb = 0;
+int gomb = 0;
 const byte led = 2;
 
 void setup() {
@@ -25,25 +25,31 @@ void setup() {
 
 void loop() {
 	if (radio.available()) {
-		char uzenet[32] = "";
-		radio.read(&uzenet, sizeof(uzenet));
+		//char uzenet[32] = "";
+		//radio.read(&uzenet, sizeof(uzenet));
 		radio.read(&gomb, sizeof(gomb));
-		Serial.print("Gomb: ");
-		Serial.println(gomb);
-		if (gomb == HIGH)
-		{
-			digitalWrite(led, LOW);
-			Serial.print("Van uzenet: ");
-			Serial.println(uzenet);
-		}
-		else
-		{
-			digitalWrite(led, HIGH);
-			Serial.print("Nincs uzenet: ");
-			Serial.println(uzenet);
-		}
+		Serial.print("Gomb a Nano-n megnyomva: ");
+		Serial.print(gomb);
+		int negyzet = gomb * gomb;
+		Serial.print(" , a negyzete: ");
+		Serial.println(negyzet);
+		//if (gomb == HIGH)
+		//{
+		//	digitalWrite(led, LOW);
+		//	Serial.print("Van uzenet: ");
+		//	Serial.println(uzenet);
+		//}
+		//else
+		//{
+		//	digitalWrite(led, HIGH);
+		//	Serial.print("Nincs uzenet: ");
+		//	Serial.println(uzenet);
+		//}
 	}
-
+	else
+	{
+		Serial.println("valami nem oke");
+	}
 	delay(5);
 }
 
