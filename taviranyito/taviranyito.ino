@@ -26,7 +26,9 @@ const byte MSDA = A4;
 const byte MSCL = A5;
 
 const byte gomb = 9;
-boolean megnyomva = 0;
+char uzenet[] = "Egyelore semmi nem tortent";
+//int megnyomva = 0;
+//int elozo = 0;
 
 const byte led = 3;
 
@@ -34,6 +36,7 @@ RF24 radio(RfCE, RfCS);
 const byte cim = 00001;
 
 void setup() {
+	Serial.begin(9600);
 	pinMode(gomb, INPUT);
 	radio.begin();
 	radio.openWritingPipe(cim);
@@ -41,19 +44,35 @@ void setup() {
 	radio.stopListening();
 }
 
-// the loop function runs over and over again until power down or reset
+
 void loop() {
-	megnyomva = digitalRead(gomb);
-	if (megnyomva)
+	if (digitalRead(gomb))
 	{
-		const char szoveg[] = "A gomb meg van nyomva";
-		radio.write(&szoveg, sizeof(szoveg));
+		int uzenet = 1;
+		radio.write(&uzenet, sizeof(uzenet));
+		Serial.println("megnyomva: BE");
+		//megnyomva++;
 	}
 	else
 	{
-		const char szoveg[] = "A gomb nincs megnyomva";
-		radio.write(&szoveg, sizeof(szoveg));
+		int uzenet = 0;
+		radio.write(&uzenet, sizeof(uzenet));
+		Serial.println("nincs megnyomva: KI");
 	}
-	radio.write(&megnyomva, sizeof(megnyomva));
-	delay(1000);
+	delay(200);
+
+	//Serial.print("megnyomva: ");
+	//Serial.println(megnyomva);
+	//if (megnyomva == HIGH)
+	//{
+	//	const char szoveg[] = "A gomb meg van nyomva";
+	//	radio.write(&szoveg, sizeof(szoveg));
+	//	allapot = 1;
+	//}
+	//else
+	//{
+	//	const char szoveg[] = "A gomb nincs megnyomva";
+	//	radio.write(&szoveg, sizeof(szoveg));
+	//	allapot = 2;
+	//}
 }
