@@ -36,8 +36,7 @@ void loop() {
 
 	if (radio.available())								// ha van fogadott adat (amit a távirányító küldött)
 	{
-		radio.read(ftomb, sizeof(ftomb));
-		//radio.read(&kuldemeny, sizeof(kuldemeny));		// adatok beolvasása
+		radio.read(ftomb, sizeof(ftomb));				// adatok beolvasása
 		Serial.print(ftomb[0]);
 		if (ftomb[0] == 1)
 		{

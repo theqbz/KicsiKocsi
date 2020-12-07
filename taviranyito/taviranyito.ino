@@ -8,11 +8,7 @@ KICSIKOCSI TÁVIRÁNYÍTÓ
 
 #include <SPI.h>
 #include <RF24.h>
-#include <RF24_config.h>
-#include <printf.h>
-#include <nRF24L01.h>
 #include <Wire.h>
-#include <I2Cdev.h>
 #include <MPU6050.h>
 
 // Arduino Nano pin-kiosztás
@@ -25,14 +21,14 @@ KICSIKOCSI TÁVIRÁNYÍTÓ
 #define MSCL A5
 
 // nRF24L01 rádió állandói
-RF24 radio(RfCE, RfCS);					// Rádió létrehozása
+RF24 radio(RfCE, RfCS);					// Rádió
 const byte cim = 9654;					// a Rádió csatornájának címe
 
 // MPU6050 giroszkóp állandói
-MPU6050 giroszkop;						//Gyroszkóp létrehozása
-int16_t ax, ay, az;
-int16_t gx, gy, gz;
-
+MPU6050 giroszkop;						// Giroszkóp
+int16_t ax, ay, az;						// gyorsulás az adott tengelyen
+int16_t gx, gy, gz;						// elfordulás az adott tengelyen
+#define OUTPUT_READABLE_ACCELGYRO
 
 // egyéb globális változók
 long uzenet = 0L;						// Be/Ki és az irányok egy 7 jegyû egész számban
@@ -40,34 +36,52 @@ int tomb[2];
 
 void setup() {
 	Serial.begin(9600);
+	giroszkop.initialize();				// Giroszkóp indítása
 	pinMode(gomb, INPUT);
 	radio.begin();						// Rádió bekapcsolása
 	radio.openWritingPipe(cim);			// csatorna megnyitása adatok küldéséhez a központba
 	radio.setPALevel(RF24_PA_MIN);		// Rádió térerejének minimumra állítása
-	Wire.begin();
 }
 
 
 void loop() {
 	radio.stopListening();							// adó-módba kapcsolja a rádiót
 
+	giroszkop.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);		// irányok kiolvasása
+	GyroPrint();
+	
+	
 	if (digitalRead(gomb))
 	{
 		uzenet = 1L;
 		tomb[0] = 1;
 		tomb[1] = 12;
-		radio.write(tomb, sizeof(tomb));
-		//radio.write(&uzenet, sizeof(uzenet));		// ütenet küldése
-		Serial.println("megnyomva: BE");
+		radio.write(tomb, sizeof(tomb));			// ütenet küldése
+//		Serial.println("megnyomva: BE");
 	}
 	else
 	{
 		uzenet = 0L;
 		tomb[0] = 2;
 		tomb[1] = 22;
-		radio.write(tomb, sizeof(tomb));
-		//radio.write(&uzenet, sizeof(uzenet));		// ütenet küldése
-		Serial.println("nincs megnyomva: KI");
+		radio.write(tomb, sizeof(tomb));			// ütenet küldése
+//		Serial.println("nincs megnyomva: KI");
 	}
 	delay(5);
+}
+
+
+void GyroPrint() {
+	Serial.print("Ax: ");
+	Serial.print(ax);
+	Serial.print("\tAy: ");
+	Serial.print(ay);
+	Serial.print("\tAz: ");
+	Serial.print(az); 
+	Serial.print("\tGx: ");
+	Serial.print(gx); 
+	Serial.print("\tGy: ");
+	Serial.print(gy); 
+	Serial.print("\tGz: ");
+	Serial.println(gz);
 }
