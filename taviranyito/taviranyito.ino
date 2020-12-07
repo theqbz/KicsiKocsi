@@ -11,6 +11,13 @@ KICSIKOCSI TÁVIRÁNYÍTÓ
 #include <Wire.h>
 #include <MPU6050.h>
 
+#define XminNyers -16000
+#define XmaxNyers 16000
+#define YminNyers -16000
+#define YmaxNyers 16000
+#define minSzog 0
+#define maxSzog 180
+
 // Arduino Nano pin-kiosztás
 #define gomb 4
 #define led 5
@@ -32,7 +39,8 @@ int16_t nyGx, nyGy, nyGz;				// nyers elfordulás adatok az adott tengelyen
 // egyéb globális változók
 long uzenet = 0L;						// Be/Ki és az irányok egy 7 jegyû egész számban
 int tomb[2];
-int y = 0;								// oldalirányú elmozdulás (0-90-ig: balra, 90-180-ig balra)
+int x = 0;								// döntés elõre-hátra 
+int y = 0;								// oldalirányú dõlés (0-90-ig: jobbra, 90-180-ig balra)
 
 void setup() {
 	//Serial.begin(9600);
@@ -46,10 +54,16 @@ void setup() {
 
 
 void loop() {
-	radio.stopListening();							// adó-módba kapcsolja a rádiót
+	giroszkop.getMotion6(&nyAx, &nyAy, &nyAz, &nyGx, &nyGy, &nyGz);			// irányok kiolvasása
+	int cAx = constrain(nyAx, XminNyers, XmaxNyers);						// értékek beszorítása a [0, 16000] intervallumba
+	int cAy = constrain(nyAy, YminNyers, YmaxNyers);
+	x = map(cAx, XminNyers, XmaxNyers, minSzog, maxSzog);					// limitált érték konvertálása a [0, 180] intervallumba
+	y = map(cAy, YminNyers, YmaxNyers, minSzog, maxSzog);
+	delay(5);
 
-	giroszkop.getMotion6(&nyAx, &nyAy, &nyAz, &nyGx, &nyGy, &nyGz);		// irányok kiolvasása
-	y = map(nyAy, -16000, 16000, 0, 180);
+	radio.stopListening();													// adó-módba kapcsolja a rádiót
+
+
 	//GyroPrint();
 
 	
@@ -69,7 +83,7 @@ void loop() {
 //		radio.write(tomb, sizeof(tomb));			// ütenet küldése
 ////		Serial.println("nincs megnyomva: KI");
 //	}
-	delay(5);
+	
 }
 
 
