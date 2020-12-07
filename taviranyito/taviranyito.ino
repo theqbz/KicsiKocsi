@@ -87,6 +87,6 @@ void GiroOffset() {
 }
 
 
-void SzogekSzamitasa() {
+int ErtekKonverzio(int16_t nyX, int16_t nyY, int16_t nyZ) {
 
 }
