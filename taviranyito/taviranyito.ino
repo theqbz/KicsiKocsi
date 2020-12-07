@@ -36,11 +36,12 @@ void setup() {
 	radio.begin();						// Rádió bekapcsolása
 	radio.openWritingPipe(cim);			// csatorna megnyitása adatok küldéséhez a központba
 	radio.setPALevel(RF24_PA_MIN);		// Rádió térerejének minimumra állítása
-	radio.stopListening();				// adó-módba kapcsolja a rádiót
 }
 
 
 void loop() {
+	radio.stopListening();							// adó-módba kapcsolja a rádiót
+
 	if (digitalRead(gomb))
 	{
 		int uzenet = 1;
