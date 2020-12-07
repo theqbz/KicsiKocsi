@@ -6,6 +6,7 @@ KICSIKOCSI KÖPONTI EGYSÉG
  Author:	qbz
 */
 
+
 #include <SPI.h>
 #include <RF24.h>
 #include <nRF24L01.h>
@@ -20,7 +21,7 @@ RF24 radio(RfCE, RfCS);					// Rádió létrehozása
 const byte cim = 9654;					// a Rádió csatornájának címe
 
 // egyéb globális változók
-long kuldemeny = 0L;
+byte kuldemeny[3];
 int ftomb[2];
 
 void setup() {
@@ -36,18 +37,22 @@ void loop() {
 
 	if (radio.available())								// ha van fogadott adat (amit a távirányító küldött)
 	{
-		radio.read(ftomb, sizeof(ftomb));				// adatok beolvasása
-		Serial.print(ftomb[0]);
-		if (ftomb[0] == 1)
+		radio.read(&kuldemeny, sizeof(kuldemeny));				// adatok beolvasása
+		Serial.print(kuldemeny[2]);
+		if (kuldemeny[2] == 1)
 		{
-			Serial.print(" bekapcs ag");
-			Serial.println(ftomb[1]);
+			Serial.print(" bekapcs ag\t");
+			Serial.print(kuldemeny[0]);
+			Serial.print("\t");
+			Serial.println(kuldemeny[1]);
 			digitalWrite(led, HIGH);
 		}
 		else
 		{
-			Serial.print(" kikapcs ag");
-			Serial.println(ftomb[1]);
+			Serial.print(" kikapcs ag\t");
+			Serial.print(kuldemeny[0]);
+			Serial.print("\t");
+			Serial.println(kuldemeny[1]);
 			digitalWrite(led, LOW);
 		}
 	}
@@ -55,7 +60,7 @@ void loop() {
 	{
 		Serial.println("valami nem oke");
 	}
-	delay(10);
+	delay(20);
 }
 
 
