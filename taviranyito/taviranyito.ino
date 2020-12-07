@@ -28,7 +28,8 @@ RF24 radio(RfCE, RfCS);					// Rádió létrehozása
 const byte cim = 9654;					// a Rádió csatornájának címe
 
 // egyéb globális változók
-char uzenet[] = "Egyelore semmi nem tortent";
+long uzenet = 0L;						// Be/Ki és az irányok egy 7 jegyû egész számban
+int tomb[2];
 
 void setup() {
 	Serial.begin(9600);
@@ -44,14 +45,20 @@ void loop() {
 
 	if (digitalRead(gomb))
 	{
-		int uzenet = 1;
-		radio.write(&uzenet, sizeof(uzenet));		// ütenet küldése
+		uzenet = 1L;
+		tomb[0] = 1;
+		tomb[1] = 12;
+		radio.write(tomb, sizeof(tomb));
+		//radio.write(&uzenet, sizeof(uzenet));		// ütenet küldése
 		Serial.println("megnyomva: BE");
 	}
 	else
 	{
-		int uzenet = 0;
-		radio.write(&uzenet, sizeof(uzenet));		// ütenet küldése
+		uzenet = 0L;
+		tomb[0] = 2;
+		tomb[1] = 22;
+		radio.write(tomb, sizeof(tomb));
+		//radio.write(&uzenet, sizeof(uzenet));		// ütenet küldése
 		Serial.println("nincs megnyomva: KI");
 	}
 	delay(5);

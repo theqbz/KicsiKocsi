@@ -19,6 +19,9 @@ const byte RfCE = 7;					// az nRF24L01 modul "Chip Enable" lába
 RF24 radio(RfCE, RfCS);					// Rádió létrehozása
 const byte cim = 9654;					// a Rádió csatornájának címe
 
+// egyéb globális változók
+long kuldemeny = 0L;
+int ftomb[2];
 
 void setup() {
 	pinMode(led, OUTPUT);
@@ -33,17 +36,19 @@ void loop() {
 
 	if (radio.available())								// ha van fogadott adat (amit a távirányító küldött)
 	{
-		int fogadott = 0;
-		radio.read(&fogadott, sizeof(fogadott));		// adatok beolvasása
-		Serial.print(fogadott);
-		if (fogadott == 1)
+		radio.read(ftomb, sizeof(ftomb));
+		//radio.read(&kuldemeny, sizeof(kuldemeny));		// adatok beolvasása
+		Serial.print(ftomb[0]);
+		if (ftomb[0] == 1)
 		{
-			Serial.println(" bekapcs ag");
+			Serial.print(" bekapcs ag");
+			Serial.println(ftomb[1]);
 			digitalWrite(led, HIGH);
 		}
 		else
 		{
-			Serial.println(" kikapcs ag");
+			Serial.print(" kikapcs ag");
+			Serial.println(ftomb[1]);
 			digitalWrite(led, LOW);
 		}
 	}
