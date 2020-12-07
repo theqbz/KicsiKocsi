@@ -26,16 +26,16 @@ const byte cim = 9654;					// a Rádió csatornájának címe
 
 // MPU6050 giroszkóp állandói
 MPU6050 giroszkop;						// Giroszkóp
-int16_t ax, ay, az;						// gyorsulás az adott tengelyen
-int16_t gx, gy, gz;						// elfordulás az adott tengelyen
-//#define OUTPUT_READABLE_ACCELGYRO
+int16_t nyAx, nyAy, nyAz;				// nyers gyorsulás adatok az adott tengelyen
+int16_t nyGx, nyGy, nyGz;				// nyers elfordulás adatok az adott tengelyen
 
 // egyéb globális változók
 long uzenet = 0L;						// Be/Ki és az irányok egy 7 jegyû egész számban
 int tomb[2];
+int y = 0;								// oldalirányú elmozdulás (0-90-ig: balra, 90-180-ig balra)
 
 void setup() {
-	Serial.begin(9600);
+	//Serial.begin(9600);
 	giroszkop.initialize();				// Giroszkóp indítása
 	pinMode(gomb, INPUT);
 	radio.begin();						// Rádió bekapcsolása
@@ -48,37 +48,41 @@ void setup() {
 void loop() {
 	radio.stopListening();							// adó-módba kapcsolja a rádiót
 
-	giroszkop.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);		// irányok kiolvasása
-	GyroPrint();
+	giroszkop.getMotion6(&nyAx, &nyAy, &nyAz, &nyGx, &nyGy, &nyGz);		// irányok kiolvasása
+	y = map(nyAy, -16000, 16000, 0, 180);
+	//GyroPrint();
 
 	
-	if (digitalRead(gomb))
-	{
-		uzenet = 1L;
-		tomb[0] = 1;
-		tomb[1] = 12;
-		radio.write(tomb, sizeof(tomb));			// ütenet küldése
-//		Serial.println("megnyomva: BE");
-	}
-	else
-	{
-		uzenet = 0L;
-		tomb[0] = 2;
-		tomb[1] = 22;
-		radio.write(tomb, sizeof(tomb));			// ütenet küldése
-//		Serial.println("nincs megnyomva: KI");
-	}
+//	if (digitalRead(gomb))
+//	{
+//		uzenet = 1L;
+//		tomb[0] = 1;
+//		tomb[1] = 12;
+//		radio.write(tomb, sizeof(tomb));			// ütenet küldése
+////		Serial.println("megnyomva: BE");
+//	}
+//	else
+//	{
+//		uzenet = 0L;
+//		tomb[0] = 2;
+//		tomb[1] = 22;
+//		radio.write(tomb, sizeof(tomb));			// ütenet küldése
+////		Serial.println("nincs megnyomva: KI");
+//	}
 	delay(5);
 }
 
 
-void GyroPrint() {
-	Serial.print(ax);
-	Serial.print("\t");
-	Serial.print(ay);
-	Serial.print("\t");
-	Serial.println(az); 
-}
+//void GyroPrint() {
+//	//Serial.print("X=");
+//	//Serial.print(nyAx);
+//	Serial.print("\tnyY=");
+//	Serial.print(nyAy);
+//	//Serial.print("\tZ=");
+//	//Serial.println(nyAz);
+//	Serial.print("\tY=");
+//	Serial.println(y); 
+//}
 
 void GiroOffset() {
 	giroszkop.setXAccelOffset(-549);
