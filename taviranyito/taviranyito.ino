@@ -78,16 +78,15 @@ void GyroPrint() {
 	Serial.print(ay);
 	Serial.print("\t");
 	Serial.println(az); 
-	//Serial.print("\tGx: ");
-	//Serial.print(gx); 
-	//Serial.print("\tGy: ");
-	//Serial.print(gy); 
-	//Serial.print("\tGz: ");
-	//Serial.println(gz);
 }
 
 void GiroOffset() {
 	giroszkop.setXAccelOffset(-549);
 	giroszkop.setYAccelOffset(-5894);
 	giroszkop.setZAccelOffset(1684);
+}
+
+
+void SzogekSzamitasa() {
+
 }
