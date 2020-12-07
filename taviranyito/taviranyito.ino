@@ -15,11 +15,11 @@ KICSIKOCSI TÁVIRÁNYÍTÓ
 #include <MPU6050.h>
 
 // Arduino Nano pin-kiosztás
-const byte led = 3;
-const byte gomb = 9;
+const byte gomb = 4;
+const byte led = 5;
 const byte RfCS = 7;					// az nRF24L01 modul "Chip Set" lába
 const byte RfCE = 8;					// az nRF24L01 modul "Chip Enable" lába
-const byte MINT = 2;
+const byte MINT = 10;
 const byte MSDA = A4;
 const byte MSCL = A5;
 
