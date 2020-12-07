@@ -28,7 +28,7 @@ const byte cim = 9654;					// a Rádió csatornájának címe
 MPU6050 giroszkop;						// Giroszkóp
 int16_t ax, ay, az;						// gyorsulás az adott tengelyen
 int16_t gx, gy, gz;						// elfordulás az adott tengelyen
-#define OUTPUT_READABLE_ACCELGYRO
+//#define OUTPUT_READABLE_ACCELGYRO
 
 // egyéb globális változók
 long uzenet = 0L;						// Be/Ki és az irányok egy 7 jegyû egész számban
@@ -73,12 +73,11 @@ void loop() {
 
 
 void GyroPrint() {
-	Serial.print("Ax: ");
 	Serial.print(ax);
-	Serial.print("\tAy: ");
+	Serial.print("\t");
 	Serial.print(ay);
-	Serial.print("\tAz: ");
-	Serial.print(az); 
+	Serial.print("\t");
+	Serial.println(az); 
 	//Serial.print("\tGx: ");
 	//Serial.print(gx); 
 	//Serial.print("\tGy: ");
