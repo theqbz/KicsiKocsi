@@ -11,9 +11,9 @@ KICSIKOCSI KÖPONTI EGYSÉG
 #include <nRF24L01.h>
 
 // Arduino UNO Wifi R2 pin-kiosztás
-const byte led = 2;
-const byte RfCS = 8;					// az nRF24L01 modul "Chip Set" lába
-const byte RfCE = 7;					// az nRF24L01 modul "Chip Enable" lába
+#define led 2
+#define RfCS 8					// az nRF24L01 modul "Chip Set" lába
+#define RfCE 7					// az nRF24L01 modul "Chip Enable" lába
 
 // nRF24L01 rádió állandói
 RF24 radio(RfCE, RfCS);					// Rádió létrehozása
