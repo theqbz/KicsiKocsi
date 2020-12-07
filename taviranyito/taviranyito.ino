@@ -41,6 +41,7 @@ void setup() {
 	radio.begin();						// Rádió bekapcsolása
 	radio.openWritingPipe(cim);			// csatorna megnyitása adatok küldéséhez a központba
 	radio.setPALevel(RF24_PA_MIN);		// Rádió térerejének minimumra állítása
+	GiroOffset();						// Giroszkóp nullázása
 }
 
 
@@ -49,7 +50,7 @@ void loop() {
 
 	giroszkop.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);		// irányok kiolvasása
 	GyroPrint();
-	
+
 	
 	if (digitalRead(gomb))
 	{
@@ -78,10 +79,16 @@ void GyroPrint() {
 	Serial.print(ay);
 	Serial.print("\tAz: ");
 	Serial.print(az); 
-	Serial.print("\tGx: ");
-	Serial.print(gx); 
-	Serial.print("\tGy: ");
-	Serial.print(gy); 
-	Serial.print("\tGz: ");
-	Serial.println(gz);
+	//Serial.print("\tGx: ");
+	//Serial.print(gx); 
+	//Serial.print("\tGy: ");
+	//Serial.print(gy); 
+	//Serial.print("\tGz: ");
+	//Serial.println(gz);
+}
+
+void GiroOffset() {
+	giroszkop.setXAccelOffset(-549);
+	giroszkop.setYAccelOffset(-5894);
+	giroszkop.setZAccelOffset(1684);
 }
