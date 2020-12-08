@@ -65,7 +65,7 @@ void loop() {
 	}
 	else
 	{
-		csomag[2] = 0;
+		csomag[2] = 1;
 	}
 	
 	//delay(5);

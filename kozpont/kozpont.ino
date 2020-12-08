@@ -11,12 +11,14 @@ KICSIKOCSI KÖPONTI EGYSÉG
 #include <SPI.h>
 #include <RF24.h>
 #include <nRF24L01.h>
+#include "C:/Program Files (x86)/Arduino/hardware/arduino/avr/cores/arduino/Arduino.h"
+#include "C:/Program Files (x86)/Arduino/hardware/tools/avr/avr/include/stdlib.h"
 
 // Arduino UNO Wifi R2 pin-kiosztás
 #define led 2
 #define MotE 3					// motor Enable
-#define MotC1 5					// motor táp1
-#define MotC2 6					// motor táp2
+#define MotC1 4					// motor táp1
+#define MotC2 5					// motor táp2
 #define RfCS 8					// az nRF24L01 modul "Chip Set" lába
 #define RfCE 7					// az nRF24L01 modul "Chip Enable" lába
 #define SrvPin 10				// a servo motor vezérlõje
@@ -36,7 +38,7 @@ void setup() {
 	pinMode(MotE, OUTPUT);
 	pinMode(MotC1, OUTPUT);
 	pinMode(MotC2, OUTPUT);
-//	Serial.begin(9600);
+	Serial.begin(9600);
 	radio.begin();						// Rádió bekapcsolása
 	radio.openReadingPipe(0, cim);		// csatorna megnyitása adatok fogadásához a távirányítótól
 	radio.setPALevel(RF24_PA_MIN);		// Rádió térerejének minimumra állítása
@@ -53,8 +55,27 @@ void loop() {
 		radio.read(&kuldemeny, sizeof(kuldemeny));				// adatok beolvasása
 		if (kuldemeny[2] == 1)
 		{
-			kormany.write(kuldemeny[1]);
+			int sebesseg = map(kuldemeny[0], 0, 255, -255, 255);
+			if (sebesseg < -15)
+			{
+				digitalWrite(MotC1, LOW);
+				digitalWrite(MotC2, HIGH);
+				sebesseg = -sebesseg;
+			}
+			else if (sebesseg > 15)
+			{
+				digitalWrite(MotC1, HIGH);
+				digitalWrite(MotC2, LOW);
+			}
+			else
+			{
+				sebesseg = 0;
+			}
+			KuldemenyKiiras(sebesseg);
+
 			digitalWrite(led, HIGH);
+			kormany.write(kuldemeny[1]);
+			analogWrite(MotE, sebesseg);
 		}
 		else
 		{
@@ -68,3 +89,13 @@ void loop() {
 	delay(20);
 }
 
+// debug függvények
+
+void KuldemenyKiiras(int sebesseg) {
+	for (int i = 0; i < 3; i++)
+	{
+		Serial.print(kuldemeny[i]);
+		Serial.print("\t");
+	}
+	Serial.println(sebesseg);
+}
