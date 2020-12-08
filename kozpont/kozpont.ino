@@ -14,6 +14,9 @@ KICSIKOCSI KÖPONTI EGYSÉG
 
 // Arduino UNO Wifi R2 pin-kiosztás
 #define led 2
+#define MotE 3					// motor Enable
+#define MotC1 5					// motor táp1
+#define MotC2 6					// motor táp2
 #define RfCS 8					// az nRF24L01 modul "Chip Set" lába
 #define RfCE 7					// az nRF24L01 modul "Chip Enable" lába
 #define SrvPin 10				// a servo motor vezérlõje
@@ -30,6 +33,9 @@ byte kuldemeny[3];						// a távirányítóból érkezõ adatok (elõre, oldalra, ok)
 
 void setup() {
 	pinMode(led, OUTPUT);
+	pinMode(MotE, OUTPUT);
+	pinMode(MotC1, OUTPUT);
+	pinMode(MotC2, OUTPUT);
 //	Serial.begin(9600);
 	radio.begin();						// Rádió bekapcsolása
 	radio.openReadingPipe(0, cim);		// csatorna megnyitása adatok fogadásához a távirányítótól
@@ -47,8 +53,7 @@ void loop() {
 		radio.read(&kuldemeny, sizeof(kuldemeny));				// adatok beolvasása
 		if (kuldemeny[2] == 1)
 		{
-			int kanyar = map(kuldemeny[1], 0, 180, 1, 179);
-			kormany.write(kanyar);
+			kormany.write(kuldemeny[1]);
 			digitalWrite(led, HIGH);
 		}
 		else
@@ -62,5 +67,4 @@ void loop() {
 	}
 	delay(20);
 }
-
 
