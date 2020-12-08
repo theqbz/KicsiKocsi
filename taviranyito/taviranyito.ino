@@ -56,8 +56,8 @@ void loop() {
 	giroszkop.getMotion6(&nyAx, &nyAy, &nyAz, &nyGx, &nyGy, &nyGz);			// irányok kiolvasása
 	int cAx = constrain(nyAx, XminNyers, XmaxNyers);						// értékek beszorítása a [0, 16000] intervallumba
 	int cAy = constrain(nyAy, YminNyers, YmaxNyers);			
-	csomag[0] = map(cAy, YminNyers, YmaxNyers, minSzog, maxSzog);			// limitált érték konvertálása a [0, 180] intervallumba
-	csomag[1] = map(cAx, XminNyers, XmaxNyers, minSzog, maxSzog);
+	csomag[0] = map(cAx, XminNyers, XmaxNyers, minSzog, maxSzog);			// limitált érték konvertálása a [0, 180] intervallumba
+	csomag[1] = map(cAy, YminNyers, YmaxNyers, minSzog, maxSzog);
 	if (digitalRead(gomb))
 	{
 		csomag[2] = 1;

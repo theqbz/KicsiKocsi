@@ -7,6 +7,7 @@ KICSIKOCSI KÖPONTI EGYSÉG
 */
 
 
+#include <Servo.h>
 #include <SPI.h>
 #include <RF24.h>
 #include <nRF24L01.h>
@@ -15,6 +16,7 @@ KICSIKOCSI KÖPONTI EGYSÉG
 #define led 2
 #define RfCS 8					// az nRF24L01 modul "Chip Set" lába
 #define RfCE 7					// az nRF24L01 modul "Chip Enable" lába
+#define kormany 10				// a servo motor vezérlõje
 
 // nRF24L01 rádió állandói
 RF24 radio(RfCE, RfCS);					// Rádió létrehozása
