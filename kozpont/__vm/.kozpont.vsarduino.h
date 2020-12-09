@@ -93,5 +93,6 @@ typedef void *__builtin_va_list;
 #define pgm_read_ptr(address_short)   short()
 
 #include "kozpont.ino"
+#include "lok.ino"
 #endif
 #endif
