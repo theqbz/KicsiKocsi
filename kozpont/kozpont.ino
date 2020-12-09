@@ -16,7 +16,7 @@ KICSIKOCSI KÖPONTI EGYSÉG
 #define TIMEOUT 100				// riasztás, ha ennyi cikluson át nem üzen a távirányító
 
 // Arduino UNO Wifi R2 pin-kiosztás
-#define led 2
+#define LED 2
 #define MotE 3					// motor Enable
 #define MotC1 4					// motor táp1
 #define MotC2 5					// motor táp2
@@ -35,10 +35,10 @@ Servo kormany;					// Szervó létrehozása
 // egyéb globális változók
 byte kuldemeny[3];				// a távirányítóból érkezõ adatok (elõre, oldalra, ok)
 int kimaradas = 0;				// a távirányító elérhetetlenségének ideje
-bool NincsKapcsolat = true;		// a távírányító nincs csatlakozva
+bool kapcsolat = true;			// a távírányító csatlakozva
 
 void setup() {
-	pinMode(led, OUTPUT);
+	pinMode(LED, OUTPUT);
 	pinMode(MotE, OUTPUT);
 	pinMode(MotC1, OUTPUT);
 	pinMode(MotC2, OUTPUT);
@@ -56,12 +56,12 @@ void loop() {
 
 	if (radio.available())				// ha van fogadott adat (amit a távirányító küldött)
 	{
-		if (NincsKapcsolat)
+		if (!kapcsolat)
 		{
-			tone(Csipogo, 880, 60);
+			tone(Csipogo, 880, 40);
 			delay(250);
-			tone(Csipogo, 1760, 60);
-			NincsKapcsolat = false;
+			tone(Csipogo, 1760, 40);
+			kapcsolat = true;
 		}
 		radio.read(&kuldemeny, sizeof(kuldemeny));				// adatok beolvasása
 		kimaradas = 0;
@@ -86,21 +86,23 @@ void loop() {
 
 			KuldemenyKiiras(sebesseg);
 
-			digitalWrite(led, HIGH);
+			digitalWrite(LED, HIGH);
 			kormany.write(kuldemeny[1]);
 			analogWrite(MotE, sebesseg);
 		}
 		else
 		{
-			digitalWrite(led, LOW);
+			digitalWrite(LED, LOW);
 		}
 	}
 	else
 	{
-		Serial.println("valami nem oke");
-		digitalWrite(led, LOW);
+		digitalWrite(LED, LOW);
 		kimaradas++;
-		NincsKapcsolat = true;
+		kapcsolat = false;
+		Serial.print("valami nem oke");
+		Serial.print("\t");
+		Serial.println(kimaradas);
 	}
 	if (kimaradas == TIMEOUT)
 	{
@@ -122,5 +124,7 @@ void KuldemenyKiiras(int sebesseg) {
 		Serial.print(kuldemeny[i]);
 		Serial.print("\t");
 	}
-	Serial.println(sebesseg);
+	Serial.print(sebesseg);
+	Serial.print("\t");
+	Serial.println(kimaradas);
 }
