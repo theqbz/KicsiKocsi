@@ -7,7 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "taviranyito", "taviranyito\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kozpont", "kozpont\kozpont.vcxproj", "{EB0CF97C-DFDF-493B-943A-DF1F965E8AF0}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "locc", "..\..\..\..\Documents\Arduino\locc\locc.vcxproj", "{BE120686-4B36-4EDE-9D0B-975F31FFE96B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "locc", "locc\locc.vcxproj", "{BE120686-4B36-4EDE-9D0B-975F31FFE96B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
