@@ -11,12 +11,14 @@ KICSIKOCSI TÁVIRÁNYÍTÓ
 #include <Wire.h>
 #include <MPU6050.h>
 
-#define XminNyers -16000
-#define XmaxNyers 16000
-#define YminNyers -16000
-#define YmaxNyers 16000
-#define minSzog 0
-#define maxSzog 180
+#define XminNyers -16000		// a nyers adatok alsó határa levágáshoz
+#define XmaxNyers 16000			// a nyers adatok felsõ határa levágáshoz
+#define YminNyers -16000		// a nyers adatok alsó határa levágáshoz
+#define YmaxNyers 16000			// a nyers adatok felsõ határa levágáshoz
+#define minSeb 0				// a konverzió alsó határa sebességhez
+#define maxSeb 255				// a konverzió felsõ határa sebességhez
+#define minSzog 1				// a konverzió alsó határa kormány-szöghöz
+#define maxSzog 179				// a konverzió felsõ határa kormány-szöghöz
 
 // Arduino Nano pin-kiosztás
 #define gomb 4
@@ -33,12 +35,10 @@ const byte cim = 9654;					// a Rádió csatornájának címe
 
 // MPU6050 giroszkóp állandói
 MPU6050 giroszkop;						// Giroszkóp
-int16_t nyAx, nyAy, nyAz;				// nyers gyorsulás adatok az adott tengelyen
-int16_t nyGx, nyGy, nyGz;				// nyers elfordulás adatok az adott tengelyen
+int16_t nyAx, nyAy, nyAz,nyGx, nyGy, nyGz;				// nyers adatok a giroszkópról
 
 // egyéb globális változók
-long uzenet = 0L;						// Be/Ki és az irányok egy 7 jegyû egész számban
-int tomb[2];
+byte csomag[3] = { 0,0,0 };				// Egy adatcsomag: elõre, oldalra, ok
 int x = 0;								// döntés elõre-hátra 
 int y = 0;								// oldalirányú dõlés (0-90-ig: jobbra, 90-180-ig balra)
 
@@ -56,47 +56,24 @@ void setup() {
 void loop() {
 	giroszkop.getMotion6(&nyAx, &nyAy, &nyAz, &nyGx, &nyGy, &nyGz);			// irányok kiolvasása
 	int cAx = constrain(nyAx, XminNyers, XmaxNyers);						// értékek beszorítása a [0, 16000] intervallumba
-	int cAy = constrain(nyAy, YminNyers, YmaxNyers);
-	x = map(cAx, XminNyers, XmaxNyers, minSzog, maxSzog);					// limitált érték konvertálása a [0, 180] intervallumba
-	y = map(cAy, YminNyers, YmaxNyers, minSzog, maxSzog);
-	delay(5);
+	int cAy = constrain(nyAy, YminNyers, YmaxNyers);			
+	csomag[0] = map(cAx, XminNyers, XmaxNyers, minSeb, maxSeb);				// sebesség érték konvertálása a [0, 255] intervallumba
+	csomag[1] = map(cAy, YminNyers, YmaxNyers, minSzog, maxSzog);			// irány konvertálása a [0,180] intervallumba
+	if (digitalRead(gomb))
+	{
+		csomag[2] = 1;
+	}
+	else
+	{
+		csomag[2] = 1;
+	}
+	
+	//delay(5);
 
 	radio.stopListening();													// adó-módba kapcsolja a rádiót
-
-
-	//GyroPrint();
-
-	
-//	if (digitalRead(gomb))
-//	{
-//		uzenet = 1L;
-//		tomb[0] = 1;
-//		tomb[1] = 12;
-//		radio.write(tomb, sizeof(tomb));			// ütenet küldése
-////		Serial.println("megnyomva: BE");
-//	}
-//	else
-//	{
-//		uzenet = 0L;
-//		tomb[0] = 2;
-//		tomb[1] = 22;
-//		radio.write(tomb, sizeof(tomb));			// ütenet küldése
-////		Serial.println("nincs megnyomva: KI");
-//	}
-	
+	radio.write(&csomag, sizeof(csomag));									// ütenet küldése
 }
 
-
-//void GyroPrint() {
-//	//Serial.print("X=");
-//	//Serial.print(nyAx);
-//	Serial.print("\tnyY=");
-//	Serial.print(nyAy);
-//	//Serial.print("\tZ=");
-//	//Serial.println(nyAz);
-//	Serial.print("\tY=");
-//	Serial.println(y); 
-//}
 
 void GiroOffset() {
 	giroszkop.setXAccelOffset(-549);
@@ -104,7 +81,3 @@ void GiroOffset() {
 	giroszkop.setZAccelOffset(1684);
 }
 
-
-int ErtekKonverzio(int16_t nyX, int16_t nyY, int16_t nyZ) {
-
-}
