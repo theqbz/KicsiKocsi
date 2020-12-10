@@ -25,3 +25,9 @@ Távirányító
 - LED + 220Ohm ellenállás
 - nyomógomb + 10kOhm ellenállás
 - Energiaforrás: 4×AA
+
+Kapcsolási rajzok
+---
+Autó: ![https://github.com/theqbz/kicsikocsi/blob/master/rajzok/kocsi_schem.jpg](https://github.com/theqbz/kicsikocsi/blob/master/rajzok/kocsi_schem.jpg)
+
+Távirányító: ![https://github.com/theqbz/kicsikocsi/blob/master/rajzok/T%C3%A1vir%C3%A1ny%C3%ADt%C3%B3_schem.jpg](https://github.com/theqbz/kicsikocsi/blob/master/rajzok/T%C3%A1vir%C3%A1ny%C3%ADt%C3%B3_schem.jpg)
