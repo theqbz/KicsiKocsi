@@ -7,124 +7,217 @@ KICSIKOCSI KÖPONTI EGYSÉG
 */
 
 
-#include <Servo.h>
+
 #include <SPI.h>
 #include <RF24.h>
 #include <nRF24L01.h>
+#include <Servo.h>
 
 #define LIMIT 100				// a limit alatti értéknél nem indul a motor
 #define TIMEOUT 100				// riasztás, ha ennyi cikluson át nem üzen a távirányító
+#define AKADALY 500				// ennél közelebb (kb. 5-6 cm ne menjen akadályokhoz)
 
 // Arduino UNO Wifi R2 pin-kiosztás
-#define LED 2
-#define MotE 3					// motor Enable
-#define MotC1 4					// motor táp1
-#define MotC2 5					// motor táp2
+#define HC1Echo 0				// Hátsó HC-SR04-4P Echo
+#define HC1Trig 1				// Hátsó HC-SR04-4P Triger
+#define HC2Echo 2				// Elsõ HC-SR04 Echo
+#define HC2Trig 9				// Elsõ HC-SR04 Triger
+#define MotC2 3					// H-bridge 2 (motor irány2)
+#define MotC1 4					// H-bridge 7 (motor irány1)
+#define MotE 5					// H-bridge 1 (motor ki-be)
 #define Csipogo 6				// piezo hangszoro
-#define RfCS 8					// az nRF24L01 modul "Chip Set" lába
-#define RfCE 7					// az nRF24L01 modul "Chip Enable" lába
-#define SrvPin 10				// a servo motor vezérlõje
+#define RfCE 7					// nRF24L01 "Chip Enable"
+#define RfCS 8					// nRF24L01 "Chip Set"
+#define MOSI 11					// nRF24L01 MOSI (Az ICSP kommunikációhoz szükséges)
+#define MISO 12					// nRF24L01 MISO (Az ICSP kommunikációhoz szükséges)
+#define SCK 13					// nRF24L01 SCK (Az ICSP kommunikációhoz szükséges)
+#define SrvPin 10				// Servo motor vezérlõje
+
+
 
 // nRF24L01 rádió állandói
 RF24 radio(RfCE, RfCS);			// Rádió létrehozása
-const byte cim = 9654;			// a Rádió csatornájának címe
+const byte cim = 96;			// a Rádió csatornájának címe
 
 // Servo
 Servo kormany;					// Szervó létrehozása
 
 // egyéb globális változók
-byte kuldemeny[3];				// a távirányítóból érkezõ adatok (elõre, oldalra, ok)
+byte csomag[3];					// a távirányítóból érkezõ adatok (elõre, oldalra, ok)
 int kimaradas = 0;				// a távirányító elérhetetlenségének ideje
-bool kapcsolat = true;			// a távírányító csatlakozva
+bool NemVoltKapcsolat = true;	// a távírányító nem volt csatlakozva
+int sebesseg = 0;				// az autó sebessége
+bool SerDebug = true;			// kiiírja-e a változókat a soros portra a ciklus végén
 
-void setup() {
-	pinMode(LED, OUTPUT);
-	pinMode(MotE, OUTPUT);
-	pinMode(MotC1, OUTPUT);
-	pinMode(MotC2, OUTPUT);
-	Serial.begin(9600);
-	radio.begin();					// Rádió bekapcsolása
-	radio.openReadingPipe(0, cim);	// csatorna nyitása adatok fogadásához a távirányítótól
-	radio.setPALevel(RF24_PA_MIN);	// Rádió térerejének minimumra állítása
-	kormany.attach(SrvPin);			// Szervó vezérlõ csatlakoztatása
-	kormany.write(90);				// kormány kiegyenesítése
-	delay(2000);
+
+
+
+void LettKapcsolat() {
+	tone(Csipogo, 880, 40);
+	delay(250);
+	tone(Csipogo, 1760, 40);
+	NemVoltKapcsolat = false;
 }
 
-void loop() {
-	radio.startListening();				// vevõ-módba kapcsolja a rádiót
+void NicsKapcsolat() {
+	tone(Csipogo, 1000, 40);
+	delay(100);
+	tone(Csipogo, 880, 20);
+	delay(100);
+	tone(Csipogo, 880, 20);
+	kimaradas = 0;
+	NemVoltKapcsolat = true;
+	sebesseg = 0;
+}
 
-	if (radio.available())				// ha van fogadott adat (amit a távirányító küldött)
+int ElsoLokator() {
+	digitalWrite(HC2Trig, LOW);
+	delayMicroseconds(2);
+	digitalWrite(HC2Trig, HIGH);
+	delayMicroseconds(10);
+	digitalWrite(HC2Trig, LOW);
+
+	return int(pulseIn(HC2Echo, HIGH));
+}
+
+int HatsoLokator() {
+	digitalWrite(HC1Trig, LOW);
+	delayMicroseconds(2);
+	digitalWrite(HC1Trig, HIGH);
+	delayMicroseconds(10);
+	digitalWrite(HC1Trig, LOW);
+
+	return int(pulseIn(HC1Echo, HIGH));
+}
+
+void SebessegIranyMeghatarozasa() {
+	sebesseg = map(csomag[0], 0, 255, -255, 255);
+	if (sebesseg < -LIMIT)
 	{
-		if (!kapcsolat)
+		if (HatsoLokator() < AKADALY)
 		{
-			tone(Csipogo, 880, 40);
-			delay(250);
-			tone(Csipogo, 1760, 40);
-			kapcsolat = true;
-		}
-		radio.read(&kuldemeny, sizeof(kuldemeny));				// adatok beolvasása
-		kimaradas = 0;
-		if (kuldemeny[2] == 1)
-		{
-			int sebesseg = map(kuldemeny[0], 0, 255, -255, 255);
-			if (sebesseg < -LIMIT)
-			{
-				digitalWrite(MotC1, LOW);
-				digitalWrite(MotC2, HIGH);
-				sebesseg = -sebesseg;
-			}
-			else if (sebesseg > LIMIT)
-			{
-				digitalWrite(MotC1, HIGH);
-				digitalWrite(MotC2, LOW);
-			}
-			else
-			{
-				sebesseg = 0;
-			}
-
-			KuldemenyKiiras(sebesseg);
-
-			digitalWrite(LED, HIGH);
-			kormany.write(kuldemeny[1]);
-			analogWrite(MotE, sebesseg);
+			sebesseg = 0;
 		}
 		else
 		{
-			digitalWrite(LED, LOW);
+			sebesseg = -sebesseg;
 		}
+		digitalWrite(MotC1, LOW);
+		digitalWrite(MotC2, HIGH);
+	}
+	else if (sebesseg > LIMIT)
+	{
+		if (ElsoLokator() < AKADALY)
+		{
+			sebesseg = 0;
+		}
+		digitalWrite(MotC1, HIGH);
+		digitalWrite(MotC2, LOW);
 	}
 	else
 	{
-		digitalWrite(LED, LOW);
-		kimaradas++;
-		kapcsolat = false;
-		Serial.print("valami nem oke");
-		Serial.print("\t");
-		Serial.println(kimaradas);
+		sebesseg = 0;
 	}
-	if (kimaradas == TIMEOUT)
+}
+
+void BejovoAdatokFeldolgozasa() {
+	if (NemVoltKapcsolat)					// jelzés, ha most lett újra online a távirányító
 	{
-		tone(Csipogo, 1000, 40);
-		delay(100);
-		tone(Csipogo, 880, 20);
-		delay(100);
-		tone(Csipogo, 880, 20);
-		kimaradas = 0;
+		LettKapcsolat();
 	}
+	radio.read(&csomag, sizeof(csomag));	// adatok beolvasása
+	kimaradas = 0;
+	if (csomag[2] == 1)
+	{
+		SebessegIranyMeghatarozasa();
+	}
+	else
+	{
+		sebesseg = 0;
+	}
+}
+
+void TaviranyitoAdatainakOlvasasa() {
+	radio.startListening();				// vevõ-módba kapcsolja a rádiót
+	if (radio.available())				// ha van fogadott adat (amit a távirányító küldött)
+	{
+		BejovoAdatokFeldolgozasa();
+	}
+	else								// ha nincs adat, minden bizonnyal megszakadt a kapcsolat
+	{
+		kimaradas++;
+	}
+
+	if (kimaradas == TIMEOUT)			// Ha megszakadt a kapcsolat, akkor le kell állni
+	{
+		NicsKapcsolat();
+	}
+}
+
+void Mozgas() {
+	kormany.write(csomag[1]);
+	analogWrite(MotE, sebesseg);
+}
+
+
+
+
+void setup() {
+	pinMode(MotE, OUTPUT);
+	pinMode(MotC1, OUTPUT);
+	pinMode(MotC2, OUTPUT);
+	pinMode(HC1Trig, OUTPUT);
+	pinMode(HC1Echo, INPUT);
+	pinMode(HC2Trig, OUTPUT);
+	pinMode(HC2Echo, INPUT);
+	Serial.begin(9600);
+	radio.begin();						// Rádió bekapcsolása
+	radio.openReadingPipe(0, cim);		// csatorna nyitása adatok fogadásához a távirányítótól
+	radio.setPALevel(RF24_PA_MIN);		// Rádió térerejének minimumra állítása
+	kormany.attach(SrvPin);				// Szervó vezérlõ csatlakoztatása
+	kormany.write(90);					// kormány kiegyenesítése
+	delay(1000);
+}
+
+void loop() {
+	TaviranyitoAdatainakOlvasasa();		// Távirányító adatainak feldolgozása
+	Mozgas();							// Mehet a kocsi
+	DEBUG();							// debug
 	delay(20);
 }
 
-// debug
 
-void KuldemenyKiiras(int sebesseg) {
-	for (int i = 0; i < 3; i++)
+
+// debug
+void DEBUG() {
+	if (Serial.available())
 	{
-		Serial.print(kuldemeny[i]);
-		Serial.print("\t");
+		if (Serial.readString()=="serialstop")
+		{
+			SerDebug = false;
+		}
+		else if(Serial.readString()=="serialstart")
+		{
+			SerDebug = true;
+		}
 	}
-	Serial.print(sebesseg);
-	Serial.print("\t");
-	Serial.println(kimaradas);
+	if (SerDebug)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			Serial.print("csaomag[");
+			Serial.print(i);
+			Serial.print("]: ");
+			Serial.print(csomag[i]);
+			Serial.print("\t");
+		}
+		Serial.print("kimarad: ");
+		Serial.print(kimaradas);
+		Serial.print("\tseb: ");
+		Serial.print(sebesseg);
+		Serial.print("\telol: ");
+		Serial.print(ElsoLokator());
+		Serial.print("\thatul: ");
+		Serial.println(HatsoLokator());
+	}
 }
