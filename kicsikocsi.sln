@@ -7,8 +7,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "taviranyito", "taviranyito\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kozpont", "kozpont\kozpont.vcxproj", "{EB0CF97C-DFDF-493B-943A-DF1F965E8AF0}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "locc", "locc\locc.vcxproj", "{BE120686-4B36-4EDE-9D0B-975F31FFE96B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -23,10 +21,6 @@ Global
 		{EB0CF97C-DFDF-493B-943A-DF1F965E8AF0}.Debug|x86.Build.0 = Debug|Win32
 		{EB0CF97C-DFDF-493B-943A-DF1F965E8AF0}.Release|x86.ActiveCfg = Release|Win32
 		{EB0CF97C-DFDF-493B-943A-DF1F965E8AF0}.Release|x86.Build.0 = Release|Win32
-		{BE120686-4B36-4EDE-9D0B-975F31FFE96B}.Debug|x86.ActiveCfg = Debug|Win32
-		{BE120686-4B36-4EDE-9D0B-975F31FFE96B}.Debug|x86.Build.0 = Debug|Win32
-		{BE120686-4B36-4EDE-9D0B-975F31FFE96B}.Release|x86.ActiveCfg = Release|Win32
-		{BE120686-4B36-4EDE-9D0B-975F31FFE96B}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
