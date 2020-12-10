@@ -1,32 +1,32 @@
-// Visual Micro is in vMicro>General>Tutorial Mode
-// 
-/*
-    Name:       locc.ino
-    Created:	2020. 12. 09. 21:01:28
-    Author:     QBZ-LAPTOP\qbz
-*/
+// Wire Slave Sender
+// by Nicholas Zambetti <http://www.zambetti.com>
 
-// Define User Types below here or use a .h file
-//
+// Demonstrates use of the Wire library
+// Sends data as an I2C/TWI slave device
+// Refer to the "Wire Master Reader" example for use with this
 
+// Created 29 March 2006
 
-// Define Function Prototypes that use User Types below here or use a .h file
-//
+// This example code is in the public domain.
 
 
-// Define Functions below here or use other .ino or cpp files
-//
+#include <Wire.h>
 
-// The setup() function runs once each time the micro-controller starts
-void setup()
-{
-
-
+void setup() {
+	Wire.begin(8);                // join i2c bus with address #8
+	Wire.onRequest(requestEvent); // register event
+	Serial.begin(9600);
 }
 
-// Add the main program code into the continuous loop() function
-void loop()
-{
+void loop() {
+	delay(100);
+}
 
-
+// function that executes whenever data is requested by master
+// this function is registered as an event, see setup()
+void requestEvent() {
+	Serial.println("itt");
+	int uz = 1;
+	Wire.write(uz); // respond with message of 6 bytes
+	// as expected by master
 }

@@ -16,11 +16,10 @@ KICSIKOCSI KÖPONTI EGYSÉG
 #define TIMEOUT 100				// riasztás, ha ennyi cikluson át nem üzen a távirányító
 
 // Arduino UNO Wifi R2 pin-kiosztás
-#define LED 2
+#define Csipogo 9				// piezo hangszoro
 #define MotE 3					// motor Enable
-#define MotC1 4					// motor táp1
-#define MotC2 5					// motor táp2
-#define Csipogo 6				// piezo hangszoro
+#define MotC1 4					// motor irány1
+#define MotC2 5					// motor irány2
 #define RfCS 8					// az nRF24L01 modul "Chip Set" lába
 #define RfCE 7					// az nRF24L01 modul "Chip Enable" lába
 #define SrvPin 10				// a servo motor vezérlõje
@@ -35,10 +34,9 @@ Servo kormany;					// Szervó létrehozása
 // egyéb globális változók
 byte kuldemeny[3];				// a távirányítóból érkezõ adatok (elõre, oldalra, ok)
 int kimaradas = 0;				// a távirányító elérhetetlenségének ideje
-bool kapcsolat = true;			// a távírányító csatlakozva
+bool NemVoltKapcsolat = true;	// a távírányító nem volt csatlakozva
 
 void setup() {
-	pinMode(LED, OUTPUT);
 	pinMode(MotE, OUTPUT);
 	pinMode(MotC1, OUTPUT);
 	pinMode(MotC2, OUTPUT);
@@ -56,13 +54,7 @@ void loop() {
 
 	if (radio.available())				// ha van fogadott adat (amit a távirányító küldött)
 	{
-		if (!kapcsolat)
-		{
-			tone(Csipogo, 880, 40);
-			delay(250);
-			tone(Csipogo, 1760, 40);
-			kapcsolat = true;
-		}
+		if (NemVoltKapcsolat) { LettKapcsolat(); }
 		radio.read(&kuldemeny, sizeof(kuldemeny));				// adatok beolvasása
 		kimaradas = 0;
 		if (kuldemeny[2] == 1)
@@ -86,34 +78,43 @@ void loop() {
 
 			KuldemenyKiiras(sebesseg);
 
-			digitalWrite(LED, HIGH);
+//			digitalWrite(LED, HIGH);
 			kormany.write(kuldemeny[1]);
 			analogWrite(MotE, sebesseg);
 		}
 		else
 		{
-			digitalWrite(LED, LOW);
+			analogWrite(MotE, 0);
 		}
 	}
 	else
 	{
-		digitalWrite(LED, LOW);
 		kimaradas++;
-		kapcsolat = false;
 		Serial.print("valami nem oke");
 		Serial.print("\t");
 		Serial.println(kimaradas);
 	}
-	if (kimaradas == TIMEOUT)
-	{
-		tone(Csipogo, 1000, 40);
-		delay(100);
-		tone(Csipogo, 880, 20);
-		delay(100);
-		tone(Csipogo, 880, 20);
-		kimaradas = 0;
-	}
+
+	if (kimaradas == TIMEOUT) { NicsKapcsolat(); }
 	delay(20);
+}
+
+
+void LettKapcsolat() {
+	//tone(Csipogo, 880, 40);
+	//delay(250);
+	//tone(Csipogo, 1760, 40);
+	NemVoltKapcsolat = false;
+}
+
+void NicsKapcsolat() {
+	//tone(Csipogo, 1000, 40);
+	//delay(100);
+	//tone(Csipogo, 880, 20);
+	//delay(100);
+	//tone(Csipogo, 880, 20);
+	kimaradas = 0;
+	NemVoltKapcsolat = true;
 }
 
 // debug
