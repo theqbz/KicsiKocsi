@@ -7,6 +7,7 @@ KICSIKOCSI KÖPONTI EGYSÉG
 */
 
 
+
 #include <Servo.h>
 #include <SPI.h>
 #include <RF24.h>
@@ -14,10 +15,13 @@ KICSIKOCSI KÖPONTI EGYSÉG
 
 #define LIMIT 100				// a limit alatti értéknél nem indul a motor
 #define TIMEOUT 100				// riasztás, ha ennyi cikluson át nem üzen a távirányító
+#define AKADALY 300				// ennél közelebb (kb. 4-5 cm ne menjen akadályokhoz)
 
 // Arduino UNO Wifi R2 pin-kiosztás
-#define HCEcho 2				// HC-SR04 Echo
-#define HCTrig 9				// HC-SR04 Triger
+#define HC1Echo 0				// Hátsó HC-SR04-4P Echo
+#define HC1Trig 1				// Hátsó HC-SR04-4P Triger
+#define HC2Echo 2				// Elsõ HC-SR04 Echo
+#define HC2Trig 9				// Elsõ HC-SR04 Triger
 #define MotC2 3					// H-bridge 2 (motor irány2)
 #define MotC1 4					// H-bridge 7 (motor irány1)
 #define MotE 5					// H-bridge 1 (motor ki-be)
@@ -41,8 +45,8 @@ byte kuldemeny[3];				// a távirányítóból érkezõ adatok (elõre, oldalra, ok)
 int kimaradas = 0;				// a távirányító elérhetetlenségének ideje
 bool NemVoltKapcsolat = true;	// a távírányító nem volt csatlakozva
 int sebesseg = 0;				// az autó sebessége
-long ido;						// a visszaverõdésig eltelt idõ a lokárotban
-int tavolsag;					// fal távolsága
+int TavEol;						// akadály távolsága elõl
+int TavHatul;					// akadály távolsága hátrafelé
 bool SerDebug = true;			// kiiírja-e a változókat a soros portra a ciklus végén
 
 
@@ -66,18 +70,49 @@ void NicsKapcsolat() {
 	sebesseg = 0;
 }
 
+int ElsoLokator() {
+	digitalWrite(HC2Trig, LOW);
+	delayMicroseconds(2);
+	digitalWrite(HC2Trig, HIGH);
+	delayMicroseconds(10);
+	digitalWrite(HC2Trig, LOW);
+
+	return int(pulseIn(HC2Echo, HIGH));
+}
+
+int HatsoLokator() {
+	digitalWrite(HC1Trig, LOW);
+	delayMicroseconds(2);
+	digitalWrite(HC1Trig, HIGH);
+	delayMicroseconds(10);
+	digitalWrite(HC1Trig, LOW);
+
+	return int(pulseIn(HC1Echo, HIGH));
+}
+
 void SebessegIranyMeghatarozasa() {
 	sebesseg = map(kuldemeny[0], 0, 255, -255, 255);
 	if (sebesseg < -LIMIT)
 	{
 		digitalWrite(MotC1, LOW);
 		digitalWrite(MotC2, HIGH);
-		sebesseg = -sebesseg;
+		if (HatsoLokator() < AKADALY)
+		{
+			sebesseg = 0;
+		}
+		else
+		{
+			sebesseg = -sebesseg;
+		}
 	}
 	else if (sebesseg > LIMIT)
 	{
 		digitalWrite(MotC1, HIGH);
 		digitalWrite(MotC2, LOW);
+		if (ElsoLokator() < AKADALY)
+		{
+			sebesseg = 0;
+		}
 	}
 	else
 	{
@@ -111,26 +146,12 @@ void TaviranyitoAdatainakOlvasasa() {
 	else								// ha nincs adat, minden bizonnyal megszakadt a kapcsolat
 	{
 		kimaradas++;
-		Serial.print("valami nem oke");
-		Serial.print("\t");
-		Serial.println(kimaradas);
 	}
 
 	if (kimaradas == TIMEOUT)			// Ha megszakadt a kapcsolat, akkor le kell állni
 	{
 		NicsKapcsolat();
 	}
-}
-
-void Lokator() {
-	digitalWrite(HCTrig, LOW);
-	delayMicroseconds(2);
-	digitalWrite(HCTrig, HIGH);
-	delayMicroseconds(10);
-	digitalWrite(HCTrig, LOW);
-
-	ido = pulseIn(HCEcho, HIGH);
-	tavolsag = ido * 0.034 / 2;
 }
 
 void Mozgas() {
@@ -143,9 +164,10 @@ void setup() {
 	pinMode(MotE, OUTPUT);
 	pinMode(MotC1, OUTPUT);
 	pinMode(MotC2, OUTPUT);
-	pinMode(HCTrig, OUTPUT);
-	pinMode(HCEcho, INPUT);
-
+	pinMode(HC1Trig, OUTPUT);
+	pinMode(HC1Echo, INPUT);
+	pinMode(HC2Trig, OUTPUT);
+	pinMode(HC2Echo, INPUT);
 	Serial.begin(9600);
 	radio.begin();						// Rádió bekapcsolása
 	radio.openReadingPipe(0, cim);		// csatorna nyitása adatok fogadásához a távirányítótól
@@ -157,9 +179,8 @@ void setup() {
 
 void loop() {
 	TaviranyitoAdatainakOlvasasa();		//Távirányító adatainak feldolgozása
-	Lokator();
 	Mozgas();							// Mehet a kocsi
-
+	
 	DEBUGmonitor();						// debug
 	delay(20);
 }
@@ -187,18 +208,19 @@ void DEBUGmonitor() {
 	{
 		for (int i = 0; i < 3; i++)
 		{
-			Serial.print("kuldemeny[");
+			Serial.print("kuld[");
 			Serial.print(i);
 			Serial.print("]: ");
 			Serial.print(kuldemeny[i]);
 			Serial.print("\t");
 		}
-		Serial.print("\tkimaradas: ");
+		Serial.print("kimarad: ");
 		Serial.print(kimaradas);
-		Serial.print("\tsebesseg: ");
+		Serial.print("\tseb: ");
 		Serial.print(sebesseg);
-		Serial.print("\ttavolsag: ");
-		Serial.print(tavolsag);
-		Serial.println(" cm");
+		Serial.print("\telol: ");
+		Serial.print(TavEol);
+		Serial.print("\thatul: ");
+		Serial.println(TavHatul);
 	}
 }
