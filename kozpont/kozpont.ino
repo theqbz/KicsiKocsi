@@ -8,14 +8,14 @@ KICSIKOCSI KÖPONTI EGYSÉG
 
 
 
-#include <Servo.h>
 #include <SPI.h>
 #include <RF24.h>
 #include <nRF24L01.h>
+#include <Servo.h>
 
 #define LIMIT 100				// a limit alatti értéknél nem indul a motor
 #define TIMEOUT 100				// riasztás, ha ennyi cikluson át nem üzen a távirányító
-#define AKADALY 300				// ennél közelebb (kb. 4-5 cm ne menjen akadályokhoz)
+#define AKADALY 500				// ennél közelebb (kb. 5-6 cm ne menjen akadályokhoz)
 
 // Arduino UNO Wifi R2 pin-kiosztás
 #define HC1Echo 0				// Hátsó HC-SR04-4P Echo
@@ -33,20 +33,20 @@ KICSIKOCSI KÖPONTI EGYSÉG
 #define SCK 13					// nRF24L01 SCK (Az ICSP kommunikációhoz szükséges)
 #define SrvPin 10				// Servo motor vezérlõje
 
+
+
 // nRF24L01 rádió állandói
 RF24 radio(RfCE, RfCS);			// Rádió létrehozása
-const byte cim = 9654;			// a Rádió csatornájának címe
+const byte cim = 96;			// a Rádió csatornájának címe
 
 // Servo
 Servo kormany;					// Szervó létrehozása
 
 // egyéb globális változók
-byte kuldemeny[3];				// a távirányítóból érkezõ adatok (elõre, oldalra, ok)
+byte csomag[3];					// a távirányítóból érkezõ adatok (elõre, oldalra, ok)
 int kimaradas = 0;				// a távirányító elérhetetlenségének ideje
 bool NemVoltKapcsolat = true;	// a távírányító nem volt csatlakozva
 int sebesseg = 0;				// az autó sebessége
-int TavEol;						// akadály távolsága elõl
-int TavHatul;					// akadály távolsága hátrafelé
 bool SerDebug = true;			// kiiírja-e a változókat a soros portra a ciklus végén
 
 
@@ -91,11 +91,9 @@ int HatsoLokator() {
 }
 
 void SebessegIranyMeghatarozasa() {
-	sebesseg = map(kuldemeny[0], 0, 255, -255, 255);
+	sebesseg = map(csomag[0], 0, 255, -255, 255);
 	if (sebesseg < -LIMIT)
 	{
-		digitalWrite(MotC1, LOW);
-		digitalWrite(MotC2, HIGH);
 		if (HatsoLokator() < AKADALY)
 		{
 			sebesseg = 0;
@@ -104,15 +102,17 @@ void SebessegIranyMeghatarozasa() {
 		{
 			sebesseg = -sebesseg;
 		}
+		digitalWrite(MotC1, LOW);
+		digitalWrite(MotC2, HIGH);
 	}
 	else if (sebesseg > LIMIT)
 	{
-		digitalWrite(MotC1, HIGH);
-		digitalWrite(MotC2, LOW);
 		if (ElsoLokator() < AKADALY)
 		{
 			sebesseg = 0;
 		}
+		digitalWrite(MotC1, HIGH);
+		digitalWrite(MotC2, LOW);
 	}
 	else
 	{
@@ -121,13 +121,13 @@ void SebessegIranyMeghatarozasa() {
 }
 
 void BejovoAdatokFeldolgozasa() {
-	if (NemVoltKapcsolat)						// jelzés, ha most lett újra online a távirányító
+	if (NemVoltKapcsolat)					// jelzés, ha most lett újra online a távirányító
 	{
 		LettKapcsolat();
 	}
-	radio.read(&kuldemeny, sizeof(kuldemeny));	// adatok beolvasása
+	radio.read(&csomag, sizeof(csomag));	// adatok beolvasása
 	kimaradas = 0;
-	if (kuldemeny[2] == 1)
+	if (csomag[2] == 1)
 	{
 		SebessegIranyMeghatarozasa();
 	}
@@ -155,9 +155,11 @@ void TaviranyitoAdatainakOlvasasa() {
 }
 
 void Mozgas() {
-	kormany.write(kuldemeny[1]);
+	kormany.write(csomag[1]);
 	analogWrite(MotE, sebesseg);
 }
+
+
 
 
 void setup() {
@@ -174,30 +176,25 @@ void setup() {
 	radio.setPALevel(RF24_PA_MIN);		// Rádió térerejének minimumra állítása
 	kormany.attach(SrvPin);				// Szervó vezérlõ csatlakoztatása
 	kormany.write(90);					// kormány kiegyenesítése
-	delay(2000);
+	delay(1000);
 }
 
 void loop() {
-	TaviranyitoAdatainakOlvasasa();		//Távirányító adatainak feldolgozása
+	TaviranyitoAdatainakOlvasasa();		// Távirányító adatainak feldolgozása
 	Mozgas();							// Mehet a kocsi
-	
-	DEBUGmonitor();						// debug
+	DEBUG();							// debug
 	delay(20);
 }
 
 
 
-
-
 // debug
-
-void DEBUGmonitor() {
+void DEBUG() {
 	if (Serial.available())
 	{
 		if (Serial.readString()=="serialstop")
 		{
 			SerDebug = false;
-//			Serial.println("monitor kikapcsolva");
 		}
 		else if(Serial.readString()=="serialstart")
 		{
@@ -208,10 +205,10 @@ void DEBUGmonitor() {
 	{
 		for (int i = 0; i < 3; i++)
 		{
-			Serial.print("kuld[");
+			Serial.print("csaomag[");
 			Serial.print(i);
 			Serial.print("]: ");
-			Serial.print(kuldemeny[i]);
+			Serial.print(csomag[i]);
 			Serial.print("\t");
 		}
 		Serial.print("kimarad: ");
@@ -219,8 +216,8 @@ void DEBUGmonitor() {
 		Serial.print("\tseb: ");
 		Serial.print(sebesseg);
 		Serial.print("\telol: ");
-		Serial.print(TavEol);
+		Serial.print(ElsoLokator());
 		Serial.print("\thatul: ");
-		Serial.println(TavHatul);
+		Serial.println(HatsoLokator());
 	}
 }
