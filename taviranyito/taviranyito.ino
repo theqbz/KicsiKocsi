@@ -23,10 +23,13 @@ KICSIKOCSI TÁVIRÁNYÍTÓ
 #define maxSzog 179				// a konverzió felsõ határa kormány-szöghöz
 
 // Arduino Nano pin-kiosztás
-#define gomb 4
-#define led 5
+#define gomb 5
+#define led 4
 #define RfCS 7					// nRF24L01 "Chip Set"
 #define RfCE 8					// nRF24L01 "Chip Enable"
+#define MOSI 11					// nRF24L01 MOSI (Az ICSP kommunikációhoz szükséges)
+#define MISO 12					// nRF24L01 MISO (Az ICSP kommunikációhoz szükséges)
+#define SCK 13					// nRF24L01 SCK (Az ICSP kommunikációhoz szükséges)
 #define MINT 10					// MPU6050 INT
 #define MSDA A4					// MPU6050 SDA
 #define MSCL A5					// MPU6050 SCL
@@ -63,11 +66,13 @@ void GiroOffset() {
 void setup() {
 	Serial.begin(9600);
 	giroszkop.initialize();				// Giroszkóp indítása
+	pinMode(led, OUTPUT);
 	pinMode(gomb, INPUT);
 	radio.begin();						// Rádió bekapcsolása
 	radio.openWritingPipe(cim);			// csatorna megnyitása adatok küldéséhez a központba
 	radio.setPALevel(RF24_PA_MIN);		// Rádió térerejének minimumra állítása
 	GiroOffset();						// Giroszkóp nullázása
+	digitalWrite(led, HIGH);
 }
 
 void loop() {
