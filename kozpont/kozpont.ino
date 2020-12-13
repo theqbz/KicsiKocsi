@@ -21,16 +21,16 @@ KICSIKOCSI KÖPONTI EGYSÉG
 #define HC1Echo 0				// Hátsó HC-SR04-4P Echo
 #define HC1Trig 1				// Hátsó HC-SR04-4P Triger
 #define HC2Echo 2				// Elsõ HC-SR04 Echo
-#define HC2Trig 9				// Elsõ HC-SR04 Triger
-#define MotC2 3					// H-bridge 2 (motor irány2)
+#define HC2Trig 3				// Elsõ HC-SR04 Triger
 #define MotC1 4					// H-bridge 7 (motor irány1)
 #define MotE 5					// H-bridge 1 (motor ki-be)
-#define Csipogo 6				// piezo hangszoro
+#define MotC2 6					// H-bridge 2 (motor irány2)
 #define RfCE 7					// nRF24L01 "Chip Enable"
 #define RfCS 8					// nRF24L01 "Chip Set"
 #define MOSI 11					// nRF24L01 MOSI (Az ICSP kommunikációhoz szükséges)
 #define MISO 12					// nRF24L01 MISO (Az ICSP kommunikációhoz szükséges)
 #define SCK 13					// nRF24L01 SCK (Az ICSP kommunikációhoz szükséges)
+#define Csipogo 9				// piezo hangszoro
 #define SrvPin 10				// Servo motor vezérlõje
 
 
