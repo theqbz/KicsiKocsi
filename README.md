@@ -28,6 +28,9 @@ Távirányító
 
 Kapcsolási rajzok
 ---
+
+![https://github.com/theqbz/kicsikocsi/blob/master/rajzok/breadboardon%20minden.jpg](https://github.com/theqbz/kicsikocsi/blob/master/rajzok/breadboardon%20minden.jpg)
+
 Autó: ![https://github.com/theqbz/kicsikocsi/blob/master/rajzok/kocsi_schem.jpg](https://github.com/theqbz/kicsikocsi/blob/master/rajzok/kocsi_schem.jpg)
 
 Távirányító: ![https://github.com/theqbz/kicsikocsi/blob/master/rajzok/T%C3%A1vir%C3%A1ny%C3%ADt%C3%B3_schem.jpg](https://github.com/theqbz/kicsikocsi/blob/master/rajzok/T%C3%A1vir%C3%A1ny%C3%ADt%C3%B3_schem.jpg)
