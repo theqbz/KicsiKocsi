@@ -9,7 +9,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kozpont", "kozpont\kozpont.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KpSzenzorok", "KpSzenzorok\KpSzenzorok.vcxproj", "{B974E983-EC96-4760-93F9-D01064CB3F6C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KpKozpont", "KpKozpont\KpKozpont.vcxproj", "{AD85235E-84AA-4A8F-BFC0-5742A07A047C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KpLokator", "KpLokator\KpLokator.vcxproj", "{AD85235E-84AA-4A8F-BFC0-5742A07A047C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

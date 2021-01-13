@@ -103,45 +103,6 @@ private:
 
 };
 
-class Lokator {
-public:
-	Lokator(byte triggerPin, byte echoPin)
-		:_triggerPin(triggerPin), _echoPin(echoPin), meresekSzama(0), meresID(0) {
-		for (int i = 0; i < LOKATOR_ATLAG; i++) { meresekEredmenye[i] = 0; }
-	}
-
-	int tavolsag() { return int(atlagSzamitasa() * 0.034 / 2); }
-
-private:
-	const byte _triggerPin;
-	const byte _echoPin;
-
-	byte meresekSzama;
-	byte meresID;
-	long meresekEredmenye[LOKATOR_ATLAG];
-
-	long atlagSzamitasa() {
-		meresekEredmenye[meresID] = meres();
-		long meresekAtlaga = 0.0;
-		for (int i = 0; i < meresekSzama; i++) {
-			meresekAtlaga += meresekEredmenye[i];
-		}
-		meresekAtlaga /= meresekSzama;
-		if (meresID < LOKATOR_ATLAG) { meresID++; }
-		else { meresID = 0; }
-		return meresekAtlaga;
-	}
-
-	long meres() {
-		digitalWrite(_triggerPin, LOW);
-		delayMicroseconds(2);
-		digitalWrite(_triggerPin, HIGH);
-		delayMicroseconds(10);
-		digitalWrite(_triggerPin, LOW);
-		if (meresekSzama < LOKATOR_ATLAG) { meresekSzama++; }
-		return pulseIn(_echoPin, HIGH);
-	}
-};
 
 KpSzenzor ArNano(2);
 Lokator elsoLokator(HC1Trig, HC1Echo);

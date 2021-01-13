@@ -15,14 +15,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="KpKozpont.ino" />
     <None Include="src\arduino folders read me.txt">
       <Filter>Misc Files</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="__vm\.KpKozpont.vsarduino.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <None Include="KpLokator.ino" />
   </ItemGroup>
 </Project>
