@@ -1,5 +1,5 @@
 /*
-  Name:		MOTOR (KICSIKOCSI K�ZPONTI EGYS�G)
+  Name:		MOTOR (KICSIKOCSI KOZPONTI EGYSEG)
   Created:	1/9/2021 7:59:35 PM
   Author:	qbz
 */
@@ -26,21 +26,21 @@
 #define RF_MISO 12				// nRF24L01 MISO (Az ICSP kommunikaciohoz szukseges)
 #define RF_SCK 13				// nRF24L01 SCK (Az ICSP kommunikaciohoz szukseges)
 
-#define TIMEOUT 500				// riasztas, ha ennyi cikluson át nem uzen a taviranyito
-#define AKADALY 500				// ennel kozelebb (kb. 5-6 cm ne menjen akadalyokhoz)
+#define TIMEOUT 100				// riasztas, ha ennyi cikluson át nem uzen a taviranyito
+#define AKADALY 10				// ennel kozelebb (centimeterben)
 #define MIN_SEBESSEG 100		// limit alatti erteknel nem indul a motor
 
 
 RF24 radio(RF_CE, RF_CS);		// Radio letrehozasa
 Servo kormany;					// Kormany letrehozasa
 
-byte kontrollerSebesseg;
-byte kontrollerKormany;
-bool kontrollerGomb;
-int kontrollerOfflineTimer;
-bool kontrollerOnline;
-byte elsoLokator;
-byte hatsoLokator;
+byte kontrollerSebesseg;		// A taviranyito altal kuldott sebesseg adat
+byte kontrollerKormany;			// A taviranyito altal kuldott kormanyzas adat
+bool kontrollerGomb;			// A taviranyito gombjanak allapota
+int kontrollerOfflineTimer;		// A taviranyito offline allapotanak kesleltetese
+bool kontrollerOnline;			// A taviranyito online allapota
+byte elsoLokator;				// Az elso lokator altal mert tavolsag
+byte hatsoLokator;				// A hatso lokator altal mert tavolsag
 
 void mozgas()
 {
@@ -101,7 +101,7 @@ int sebessegSzamitasa()
 {
 	if (kontrollerGomb == 1 && kontrollerOnline) {
 		int sebesseg = map(kontrollerSebesseg, 0, 255, -255, 255);
-		if (sebesseg > -MIN_SEBESSEG) {									// ha a sebesseg alapjan hatrament van es nagyobb a minimumnal
+		if (sebesseg < -MIN_SEBESSEG) {									// ha a sebesseg alapjan hatrament van es nagyobb a minimumnal
 			digitalWrite(MOTOR_ELORE, LOW);
 			digitalWrite(MOTOR_HATRA, HIGH);
 			if (hatsoLokator < AKADALY) sebesseg = 0;					// ha a hatso lokotor alapjan kozel egy akadaly
@@ -118,23 +118,23 @@ int sebessegSzamitasa()
 	else return 0;
 }
 
-void debug()
-{
-	Serial.print("K[0]: ");
-	Serial.print(kontrollerSebesseg);
-	Serial.print(" K[1]: ");
-	Serial.print(kontrollerKormany);
-	Serial.print(" K[2]: ");
-	Serial.print(kontrollerGomb);
-	Serial.print(" OTime: ");
-	Serial.print(kontrollerOfflineTimer);
-	Serial.print(" KOnline: ");
-	Serial.print(kontrollerOnline);
-	Serial.print(" ELok: ");
-	Serial.print(elsoLokator);
-	Serial.print(" HLok: ");
-	Serial.println(hatsoLokator);
-}
+//void debug()
+//{
+//	Serial.print("K[0]: ");
+//	Serial.print(kontrollerSebesseg);
+//	Serial.print(" K[1]: ");
+//	Serial.print(kontrollerKormany);
+//	Serial.print(" K[2]: ");
+//	Serial.print(kontrollerGomb);
+//	Serial.print(" OTime: ");
+//	Serial.print(kontrollerOfflineTimer);
+//	Serial.print(" KOnline: ");
+//	Serial.print(kontrollerOnline);
+//	Serial.print(" ELok: ");
+//	Serial.print(elsoLokator);
+//	Serial.print(" HLok: ");
+//	Serial.println(hatsoLokator);
+//}
 
 void setup()
 {
@@ -153,6 +153,5 @@ void setup()
 
 void loop()
 {
-//	debug();
 	mozgas();
 }
