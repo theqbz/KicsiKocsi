@@ -75,6 +75,8 @@ typedef void *__builtin_va_list;
 
 
 #include "arduino.h"
+#include <pins_arduino.h> 
+#include <timers.h> 
 //#undef F
 //#define F(string_literal) ((const PROGMEM char *)(string_literal))
 #undef PSTR

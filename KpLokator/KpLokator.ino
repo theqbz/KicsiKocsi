@@ -1,7 +1,5 @@
 /*
-	KICSIKOCSI KÖZPONTI EGYSÉG - LOKÁTOR
-
- Name:		KpLokator.ino
+ Name:		LOKÁTOR (KICSIKOCSI KÖZPONTI EGYSÉG)
  Created:	1/9/2021 11:06:05 PM
  Author:	qbz
 */
@@ -25,10 +23,10 @@ bool adatFogadasRendben = false;
 Lokator elso(HC1Trig, HC1Echo);
 Lokator hatso(HC2Trig, HC2Echo);
 
-//// debug
-//unsigned long actTime;
-//unsigned long prevTime;
-//int L;
+// debug
+unsigned long currentTime;
+unsigned long previousTime;
+int L;
 
 void adatokFogadasa(int n) {
 	if (n != FOGADOTT_TOMB_MERET) digitalWrite(LED_BUILTIN, HIGH);
@@ -60,5 +58,11 @@ void setup() {
 	Wire.onRequest(adatokKuldese);
 }
 
-void loop() {}
+void loop() {
+
+// debug
+	currentTime = millis();
+	L = currentTime - previousTime;
+	previousTime = currentTime;
+}
 

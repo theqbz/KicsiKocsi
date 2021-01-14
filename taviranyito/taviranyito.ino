@@ -7,20 +7,11 @@ KICSIKOCSI TÁVIRÁNYÍTÓ
 */
 
 
-
 #include <SPI.h>
 #include <RF24.h>
 #include <nRF24L01.h>
 #include <MPU6050.h>
 
-#define XminNyers -16000		// a nyers adatok alsó határa levágáshoz
-#define XmaxNyers 16000			// a nyers adatok felsõ határa levágáshoz
-#define YminNyers -16000		// a nyers adatok alsó határa levágáshoz
-#define YmaxNyers 16000			// a nyers adatok felsõ határa levágáshoz
-#define minSeb 0				// a konverzió alsó határa sebességhez
-#define maxSeb 255				// a konverzió felsõ határa sebességhez
-#define minSzog 1				// a konverzió alsó határa kormány-szöghöz
-#define maxSzog 179				// a konverzió felsõ határa kormány-szöghöz
 
 // Arduino Nano pin-kiosztás
 #define gomb 5
@@ -34,6 +25,14 @@ KICSIKOCSI TÁVIRÁNYÍTÓ
 #define MSDA A4					// MPU6050 SDA
 #define MSCL A5					// MPU6050 SCL
 
+#define XminNyers -16000		// a nyers adatok alsó határa levágáshoz
+#define XmaxNyers 16000			// a nyers adatok felsõ határa levágáshoz
+#define YminNyers -16000		// a nyers adatok alsó határa levágáshoz
+#define YmaxNyers 16000			// a nyers adatok felsõ határa levágáshoz
+#define minSeb 0				// a konverzió alsó határa sebességhez
+#define maxSeb 255				// a konverzió felsõ határa sebességhez
+#define minSzog 1				// a konverzió alsó határa kormány-szöghöz
+#define maxSzog 179				// a konverzió felsõ határa kormány-szöghöz
 
 
 // nRF24L01 rádió állandói
@@ -48,10 +47,8 @@ int16_t nyAx, nyAy, nyAz, nyGx, nyGy, nyGz;	// nyers adatok a giroszkópról
 byte csomag[3] = { 0,0,0 };					// Egy adatcsomag: elõre, oldalra, ok
 
 
-
-
-
-void GiroOffset() {
+void GiroOffset()
+{
 	giroszkop.setXAccelOffset(-549);
 	giroszkop.setYAccelOffset(-5894);
 	giroszkop.setZAccelOffset(1684);
@@ -61,9 +58,8 @@ void GiroOffset() {
 }
 
 
-
-
-void setup() {
+void setup()
+{
 	Serial.begin(9600);
 	giroszkop.initialize();				// Giroszkóp indítása
 	pinMode(led, OUTPUT);
@@ -75,7 +71,8 @@ void setup() {
 	digitalWrite(led, HIGH);
 }
 
-void loop() {
+void loop()
+{
 	giroszkop.getMotion6(&nyAx, &nyAy, &nyAz, &nyGx, &nyGy, &nyGz);			// irányok kiolvasása
 	int cAx = constrain(nyAx, XminNyers, XmaxNyers);						// értékek beszorítása a [0, 16000] intervallumba
 	int cAy = constrain(nyAy, YminNyers, YmaxNyers);
@@ -96,24 +93,24 @@ void loop() {
 	}
 	radio.stopListening();													// adó-módba kapcsolja a rádiót
 	radio.write(&csomag, sizeof(csomag));									// ütenet küldése
-	DEBUG(cAx, cAy, cAz, cGx, cGy, cGz);
+//	DEBUG(cAx, cAy, cAz, cGx, cGy, cGz);
 }
 
 
 
 
-//debug
-void DEBUG(int x, int y, int z, int gx, int gy, int gz) {
-	Serial.print("AX: ");
-	Serial.print(x);
-	Serial.print("\tAY: ");
-	Serial.print(y);
-	Serial.print("\tAZ: ");
-	Serial.print(z);
-	Serial.print("\tGX: ");
-	Serial.print(gx);
-	Serial.print("\tGY: ");
-	Serial.print(gy);
-	Serial.print("\tGZ: ");
-	Serial.println(gz);
-}
+////debug
+//void DEBUG(int x, int y, int z, int gx, int gy, int gz) {
+//	Serial.print("AX: ");
+//	Serial.print(x);
+//	Serial.print("\tAY: ");
+//	Serial.print(y);
+//	Serial.print("\tAZ: ");
+//	Serial.print(z);
+//	Serial.print("\tGX: ");
+//	Serial.print(gx);
+//	Serial.print("\tGY: ");
+//	Serial.print(gy);
+//	Serial.print("\tGZ: ");
+//	Serial.println(gz);
+//}

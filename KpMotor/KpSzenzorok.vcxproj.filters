@@ -15,14 +15,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="KpSzenzorok.ino" />
     <None Include="src\arduino folders read me.txt">
       <Filter>Misc Files</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="__vm\.KpSzenzorok.vsarduino.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <None Include="KpMotor.ino" />
   </ItemGroup>
 </Project>
