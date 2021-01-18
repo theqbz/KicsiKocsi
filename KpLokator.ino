@@ -1,14 +1,12 @@
 /*
  Name:		LOKATOR (KICSIKOCSI KOZPONTI EGYSEG)
-					Arduino WiFi Rev2
- Created:	1/9/2021 11:06:05 PM
- Author:	qbz
+		Arduino UNO R3
 */
 
 #include <Wire.h>
 #include "Lokator.h"
 
-// Arduino WiFi Rev2 pin kiosztas
+// Arduino UNO R3 pin kiosztas
 #define HC1Echo 4				// Hatso HC-SR04-4P Echo
 #define HC1Trig 5				// Hatso HC-SR04-4P Triger
 #define HC2Echo 6				// Elso HC-SR04 Echo
