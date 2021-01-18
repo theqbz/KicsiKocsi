@@ -1,5 +1,7 @@
+// K√ñZPONTI EGYS√âG LOK√ÅTOR
+
 #pragma once
-#define OSSZES_MINTAVETEL 3		// MintavÈtelek sz·ma a mozgÛ·tlaghoz
+#define OSSZES_MINTAVETEL 3		// Mintav√©telek sz√°ma a mozg√≥√°tlaghoz
 
 class Lokator {
 public:
