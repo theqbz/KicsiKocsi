@@ -1,9 +1,7 @@
 /*
-KICSIKOCSI T¡VIR¡NYÕT”
-
- Name:		kicsikocsi.ino
- Created:	12/5/2020 6:14:38 PM
- Author:	qbz
+ Name:		KICSIKOCSI T√ÅVIR√ÅNY√çT√ì
+		Arduino Nano
+		
 */
 
 
@@ -13,38 +11,38 @@ KICSIKOCSI T¡VIR¡NYÕT”
 #include <MPU6050.h>
 
 
-// Arduino Nano pin-kioszt·s
+// Arduino Nano pin-kioszt√°s
 #define gomb 5
 #define led 4
 #define RfCS 7					// nRF24L01 "Chip Set"
 #define RfCE 8					// nRF24L01 "Chip Enable"
-#define MOSI 11					// nRF24L01 MOSI (Az ICSP kommunik·ciÛhoz sz¸ksÈges)
-#define MISO 12					// nRF24L01 MISO (Az ICSP kommunik·ciÛhoz sz¸ksÈges)
-#define SCK 13					// nRF24L01 SCK (Az ICSP kommunik·ciÛhoz sz¸ksÈges)
+#define MOSI 11					// nRF24L01 MOSI (Az ICSP kommunik√°ci√≥hoz sz√ºks√©ges)
+#define MISO 12					// nRF24L01 MISO (Az ICSP kommunik√°ci√≥hoz sz√ºks√©ges)
+#define SCK 13					// nRF24L01 SCK (Az ICSP kommunik√°ci√≥hoz sz√ºks√©ges)
 #define MINT 10					// MPU6050 INT
 #define MSDA A4					// MPU6050 SDA
 #define MSCL A5					// MPU6050 SCL
 
-#define XminNyers -16000		// a nyers adatok alsÛ hat·ra lev·g·shoz
-#define XmaxNyers 16000			// a nyers adatok felsı hat·ra lev·g·shoz
-#define YminNyers -16000		// a nyers adatok alsÛ hat·ra lev·g·shoz
-#define YmaxNyers 16000			// a nyers adatok felsı hat·ra lev·g·shoz
-#define minSeb 0				// a konverziÛ alsÛ hat·ra sebessÈghez
-#define maxSeb 255				// a konverziÛ felsı hat·ra sebessÈghez
-#define minSzog 1				// a konverziÛ alsÛ hat·ra korm·ny-szˆghˆz
-#define maxSzog 179				// a konverziÛ felsı hat·ra korm·ny-szˆghˆz
+#define XminNyers -16000		// a nyers adatok als√≥ hat√°ra lev√°g√°shoz
+#define XmaxNyers 16000			// a nyers adatok fels≈ë hat√°ra lev√°g√°shoz
+#define YminNyers -16000		// a nyers adatok als√≥ hat√°ra lev√°g√°shoz
+#define YmaxNyers 16000			// a nyers adatok fels≈ë hat√°ra lev√°g√°shoz
+#define minSeb 0				// a konverzi√≥ als√≥ hat√°ra sebess√©ghez
+#define maxSeb 255				// a konverzi√≥ fels≈ë hat√°ra sebess√©ghez
+#define minSzog 1				// a konverzi√≥ als√≥ hat√°ra korm√°ny-sz√∂gh√∂z
+#define maxSzog 179				// a konverzi√≥ fels≈ë hat√°ra korm√°ny-sz√∂gh√∂z
 
 
-// nRF24L01 r·diÛ ·llandÛi
-RF24 radio(RfCE, RfCS);						// R·diÛ
-const byte cim = 96;						// a R·diÛ csatorn·j·nak cÌme
+// nRF24L01 r√°di√≥ √°lland√≥i
+RF24 radio(RfCE, RfCS);						// R√°di√≥
+const byte cim = 96;						// a R√°di√≥ csatorn√°j√°nak c√≠me
 
-// MPU6050 giroszkÛp ·llandÛi
-MPU6050 giroszkop;							// GiroszkÛp
-int16_t nyAx, nyAy, nyAz, nyGx, nyGy, nyGz;	// nyers adatok a giroszkÛprÛl
+// MPU6050 giroszk√≥p √°lland√≥i
+MPU6050 giroszkop;							// Giroszk√≥p
+int16_t nyAx, nyAy, nyAz, nyGx, nyGy, nyGz;	// nyers adatok a giroszk√≥pr√≥l
 
-// egyÈb glob·lis v·ltozÛ
-byte csomag[3] = { 0,0,0 };					// Egy adatcsomag: elıre, oldalra, ok
+// egy√©b glob√°lis v√°ltoz√≥
+byte csomag[3] = { 0,0,0 };					// Egy adatcsomag: el≈ëre, oldalra, ok
 
 
 void GiroOffset()
@@ -61,28 +59,28 @@ void GiroOffset()
 void setup()
 {
 	Serial.begin(9600);
-	giroszkop.initialize();				// GiroszkÛp indÌt·sa
+	giroszkop.initialize();				// Giroszk√≥p ind√≠t√°sa
 	pinMode(led, OUTPUT);
 	pinMode(gomb, INPUT);
-	radio.begin();						// R·diÛ bekapcsol·sa
-	radio.openWritingPipe(cim);			// csatorna megnyit·sa adatok k¸ldÈsÈhez a kˆzpontba
-	radio.setPALevel(RF24_PA_MIN);		// R·diÛ tÈrerejÈnek minimumra ·llÌt·sa
-	GiroOffset();						// GiroszkÛp null·z·sa
+	radio.begin();						// R√°di√≥ bekapcsol√°sa
+	radio.openWritingPipe(cim);			// csatorna megnyit√°sa adatok k√ºld√©s√©hez a k√∂zpontba
+	radio.setPALevel(RF24_PA_MIN);		// R√°di√≥ t√©rerej√©nek minimumra √°ll√≠t√°sa
+	GiroOffset();						// Giroszk√≥p null√°z√°sa
 	digitalWrite(led, HIGH);
 }
 
 void loop()
 {
-	giroszkop.getMotion6(&nyAx, &nyAy, &nyAz, &nyGx, &nyGy, &nyGz);			// ir·nyok kiolvas·sa
-	int cAx = constrain(nyAx, XminNyers, XmaxNyers);						// ÈrtÈkek beszorÌt·sa a [0, 16000] intervallumba
+	giroszkop.getMotion6(&nyAx, &nyAy, &nyAz, &nyGx, &nyGy, &nyGz);			// ir√°nyok kiolvas√°sa
+	int cAx = constrain(nyAx, XminNyers, XmaxNyers);						// √©rt√©kek beszor√≠t√°sa a [0, 16000] intervallumba
 	int cAy = constrain(nyAy, YminNyers, YmaxNyers);
 	int cAz = constrain(nyAz, YminNyers, YmaxNyers);
 	int cGx = constrain(nyGx, XminNyers, XmaxNyers);
 	int cGy = constrain(nyGy, YminNyers, YmaxNyers);
 	int cGz = constrain(nyGz, YminNyers, YmaxNyers);
 
-	csomag[0] = map(cAx, XminNyers, XmaxNyers, minSeb, maxSeb);				// sebessÈg ÈrtÈk konvert·l·sa a [0, 255] intervallumba
-	csomag[1] = map(cAy, YminNyers, YmaxNyers, minSzog, maxSzog);			// ir·ny konvert·l·sa a [0,180] intervallumba
+	csomag[0] = map(cAx, XminNyers, XmaxNyers, minSeb, maxSeb);				// sebess√©g √©rt√©k konvert√°l√°sa a [0, 255] intervallumba
+	csomag[1] = map(cAy, YminNyers, YmaxNyers, minSzog, maxSzog);			// ir√°ny konvert√°l√°sa a [0,180] intervallumba
 	if (digitalRead(gomb))
 	{
 		csomag[2] = 1;
@@ -91,8 +89,8 @@ void loop()
 	{
 		csomag[2] = 1;
 	}
-	radio.stopListening();													// adÛ-mÛdba kapcsolja a r·diÛt
-	radio.write(&csomag, sizeof(csomag));									// ¸tenet k¸ldÈse
+	radio.stopListening();													// ad√≥-m√≥dba kapcsolja a r√°di√≥t
+	radio.write(&csomag, sizeof(csomag));									// √ºtenet k√ºld√©se
 //	DEBUG(cAx, cAy, cAz, cGx, cGy, cGz);
 }
 
