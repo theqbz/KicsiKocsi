@@ -1,5 +1,6 @@
 /*
- Name:		LOKÁTOR (KICSIKOCSI KÖZPONTI EGYSÉG)
+ Name:		LOKATOR (KICSIKOCSI KOZPONTI EGYSEG)
+					Arduino WiFi Rev2
  Created:	1/9/2021 11:06:05 PM
  Author:	qbz
 */
@@ -7,21 +8,21 @@
 #include <Wire.h>
 #include "Lokator.h"
 
-// Arduino WiFi Rev2 pin kiosztás
-#define HC1Echo 4			// Elsõ HC-SR04-4P Echo
-#define HC1Trig 5			// Elsõ HC-SR04-4P Triger
-#define HC2Echo 6			// Hátsó HC-SR04 Echo
-#define HC2Trig 7			// Hátsó HC-SR04 Triger
+// Arduino WiFi Rev2 pin kiosztas
+#define HC1Echo 4				// Hatso HC-SR04-4P Echo
+#define HC1Trig 5				// Hatso HC-SR04-4P Triger
+#define HC2Echo 6				// Elso HC-SR04 Echo
+#define HC2Trig 7				// Elso HC-SR04 Triger
 
-// egyéb állandók
-#define LOKATOROK_SZAMA 2		// A kocsin mûködõ lokátorok száma
-#define FOGADOTT_TOMB_MERET 3	// A másik arduinotól fogadott adatok mérete
+// egyeb allandok
+#define LOKATOROK_SZAMA 2										// A kocsin mukodo lokatorok szama
+#define FOGADOTT_TOMB_MERET 3								// A masik arduinotol fogadott adatok merete
 
 byte kuldottAdatok[LOKATOROK_SZAMA];
 byte fogadottAdatok[FOGADOTT_TOMB_MERET];
 bool adatFogadasRendben = false;
-Lokator elso(HC1Trig, HC1Echo);
-Lokator hatso(HC2Trig, HC2Echo);
+Lokator elso(HC2Trig, HC2Echo);
+Lokator hatso(HC1Trig, HC1Echo);
 
 // debug
 unsigned long currentTime;

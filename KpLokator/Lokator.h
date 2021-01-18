@@ -1,5 +1,5 @@
 #pragma once
-#define OSSZES_MINTAVETEL 10		// Mintavételek száma a mozgóátlaghoz
+#define OSSZES_MINTAVETEL 3		// Mintavételek száma a mozgóátlaghoz
 
 class Lokator {
 public:
