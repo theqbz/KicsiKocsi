@@ -1,8 +1,7 @@
 /*
   Name:		MOTOR (KICSIKOCSI KOZPONTI EGYSEG)
-					Arduino Nano
-  Created:	1/9/2021 7:59:35 PM
-  Author:	qbz
+		Arduino Nano
+
 */
 
 #include <SPI.h>
@@ -27,7 +26,7 @@
 #define RF_SCK 13										// nRF24L01 SCK (Az ICSP kommunikaciohoz szukseges)
 
 // egyeb allandok
-#define TIMEOUT 100									// riasztas, ha ennyi cikluson át nem uzen a taviranyito
+#define TIMEOUT 100									// riasztas, ha ennyi cikluson Ã¡t nem uzen a taviranyito
 #define AKADALY 20									// ennel kozelebb (centimeterben)
 #define MIN_SEBESSEG 100						// limit alatti erteknel nem indul a motor
 
