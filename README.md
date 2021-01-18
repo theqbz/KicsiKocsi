@@ -40,3 +40,11 @@ Kapcsolási rajzok
 Autó: ![https://github.com/theqbz/kicsikocsi/blob/master/rajzok/%C3%9AjK%C3%B6zpont_schem.png](https://github.com/theqbz/kicsikocsi/blob/master/rajzok/%C3%9AjK%C3%B6zpont_schem.png)
 
 Távirányító: ![https://github.com/theqbz/kicsikocsi/blob/master/rajzok/T%C3%A1vir%C3%A1ny%C3%ADt%C3%B3_schem.jpg](https://github.com/theqbz/kicsikocsi/blob/master/rajzok/T%C3%A1vir%C3%A1ny%C3%ADt%C3%B3_schem.jpg)
+
+Forráskódok
+====
+A központi egység két része számára:
+- Központ (Arduino Nano): ![KpMotor.ino](KpMotor.ino)
+- "Lokátor" (Arduino UNO): ![KpLokator.ino](KpLokator.ino) + ![Lokator.h](Lokator.h)
+
+A távirányító (Arduino Nano): ![taviranyito.ino](taviranyito.ino)
